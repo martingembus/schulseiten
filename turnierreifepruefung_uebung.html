@@ -1,0 +1,1863 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interaktive Übung: Turnierreifeprüfung (DFB) – Praxis &amp; Theorie</title>
+<style>
+  :root {
+    --primary: #b71c1c;
+    --primary-dark: #7f0000;
+    --primary-light: #ffebee;
+    --secondary: #1e293b;
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --border: #cbd5e1;
+    --text: #0f172a;
+    --muted: #64748b;
+    --success: #15803d;
+    --success-bg: #dcfce7;
+    --warning: #b45309;
+    --warning-bg: #fef3c7;
+    --danger: #b91c1c;
+    --danger-bg: #fee2e2;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 0;
+    line-height: 1.5;
+  }
+  header {
+    background: linear-gradient(135deg, var(--secondary), #334155);
+    color: #fff;
+    padding: 1.5rem 1rem;
+    border-bottom: 4px solid var(--primary);
+  }
+  .container {
+    max-width: 1050px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+  header h1 {
+    margin: 0 0 0.35rem 0;
+    font-size: 1.6rem;
+  }
+  header p {
+    margin: 0;
+    color: #cbd5e1;
+    font-size: 0.95rem;
+  }
+  .tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1.25rem;
+    flex-wrap: wrap;
+  }
+  .tab-btn {
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.25);
+    padding: 0.65rem 1.25rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .tab-btn:hover { background: rgba(255,255,255,0.22); }
+  .tab-btn.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px rgba(183, 28, 28, 0.35);
+  }
+  main { padding: 1.5rem 0 3rem 0; }
+  .section { display: none; }
+  .section.active { display: block; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 0.75rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .card-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--secondary);
+    margin: 0;
+  }
+  .badge {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: #e2e8f0;
+    color: var(--secondary);
+  }
+  .badge-red { background: var(--primary-light); color: var(--primary); }
+  .badge-green { background: var(--success-bg); color: var(--success); }
+
+  /* Praxis-Steuerung */
+  .weapon-selector {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .weapon-btn {
+    padding: 0.55rem 1.1rem;
+    border: 2px solid var(--border);
+    background: #fff;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .weapon-btn.active {
+    border-color: var(--primary);
+    background: var(--primary-light);
+    color: var(--primary);
+  }
+  .progress-bar-wrap {
+    background: #e2e8f0;
+    border-radius: 999px;
+    height: 14px;
+    overflow: hidden;
+    margin: 0.5rem 0;
+  }
+  .progress-bar-fill {
+    background: var(--success);
+    height: 100%;
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+  .praxis-category {
+    margin-top: 1.5rem;
+  }
+  .praxis-category h3 {
+    background: var(--secondary);
+    color: #fff;
+    padding: 0.55rem 0.9rem;
+    border-radius: 6px;
+    font-size: 1.05rem;
+    margin-bottom: 0.75rem;
+  }
+  .action-item {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    margin-bottom: 0.65rem;
+    background: #fff;
+    overflow: hidden;
+  }
+  .action-item.completed {
+    border-color: #86efac;
+    background: #f0fdf4;
+  }
+  .action-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    gap: 0.75rem;
+  }
+  .action-head:hover { background: #f8fafc; }
+  .action-item.completed .action-head:hover { background: #dcfce7; }
+  .action-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 600;
+  }
+  .action-master-cb {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--success);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .action-body {
+    display: none;
+    padding: 0.75rem 1rem 1rem 2.75rem;
+    border-top: 1px dashed #cbd5e1;
+    background: rgba(255,255,255,0.7);
+  }
+  .action-body.open { display: block; }
+  .checklist-ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .checklist-ul li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.55rem;
+    padding: 0.3rem 0;
+    font-size: 0.93rem;
+  }
+  .checklist-ul input[type="checkbox"] {
+    margin-top: 0.25rem;
+    width: 16px;
+    height: 16px;
+    accent-color: var(--primary);
+    flex-shrink: 0;
+  }
+  .checklist-ul label { cursor: pointer; }
+  .checklist-ul input:checked + label {
+    text-decoration: line-through;
+    color: var(--muted);
+  }
+
+  /* Theorie-Styling */
+  .info-box {
+    background: #eff6ff;
+    border-left: 4px solid #2563eb;
+    padding: 0.85rem 1rem;
+    border-radius: 6px;
+    margin-bottom: 1.25rem;
+    font-size: 0.92rem;
+  }
+  .age-select-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+  }
+  select, input[type="text"], input[type="number"] {
+    padding: 0.45rem 0.65rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.95rem;
+  }
+  .part-header {
+    background: var(--primary);
+    color: #fff;
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    margin: 1.75rem 0 1rem 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+  .q-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem 1.15rem;
+    margin-bottom: 0.9rem;
+    transition: border-color 0.2s;
+  }
+  .q-card.correct { border-left: 5px solid var(--success); background: #f0fdf4; }
+  .q-card.partial { border-left: 5px solid var(--warning); background: #fffbeb; }
+  .q-card.wrong { border-left: 5px solid var(--danger); background: #fef2f2; }
+  .q-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 0.65rem;
+  }
+  .q-num {
+    font-weight: 700;
+    color: var(--primary);
+    margin-right: 0.4rem;
+  }
+  .q-text { font-weight: 600; }
+  .q-pts {
+    font-size: 0.82rem;
+    font-weight: 600;
+    background: #f1f5f9;
+    padding: 0.2rem 0.55rem;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+  .opt-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.55rem;
+    padding: 0.4rem 0.6rem;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-bottom: 0.25rem;
+  }
+  .opt-label:hover { background: #f1f5f9; }
+  .opt-label input { margin-top: 0.28rem; width: 16px; height: 16px; accent-color: var(--primary); }
+  .free-inputs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  .feedback-msg {
+    margin-top: 0.65rem;
+    padding: 0.55rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    display: none;
+  }
+  .feedback-msg.show { display: block; }
+  .fb-ok { background: var(--success-bg); color: var(--success); }
+  .fb-warn { background: var(--warning-bg); color: var(--warning); }
+  .fb-err { background: var(--danger-bg); color: var(--danger); }
+
+  /* SVG Fechtbahn & Silhouetten */
+  .piste-wrapper {
+    overflow-x: auto;
+    padding: 0.5rem 0;
+  }
+  .piste-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 0.65rem;
+    margin-top: 0.75rem;
+  }
+  .silhouettes-row {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin: 0.75rem 0;
+    background: #f8fafc;
+    padding: 0.75rem;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+  }
+  .sil-box {
+    text-align: center;
+    font-weight: 700;
+  }
+
+  /* Tableau E10 */
+  .tableau-table {
+    width: 100%;
+    max-width: 560px;
+    border-collapse: collapse;
+    margin-top: 0.75rem;
+    text-align: center;
+  }
+  .tableau-table th, .tableau-table td {
+    border: 1px solid #94a3b8;
+    padding: 0.45rem;
+  }
+  .tableau-table th { background: #e2e8f0; }
+  .tableau-diag { background: #334155; }
+  .tableau-input {
+    width: 58px;
+    text-align: center;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  /* Buttons & Ergebnis-Banner */
+  .btn-row {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+  }
+  .btn-primary {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .btn-primary:hover { background: var(--primary-dark); }
+  .btn-secondary {
+    background: #fff;
+    color: var(--secondary);
+    border: 1px solid var(--border);
+    padding: 0.75rem 1.25rem;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .btn-secondary:hover { background: #f1f5f9; }
+  .result-banner {
+    display: none;
+    padding: 1.25rem;
+    border-radius: 10px;
+    margin-top: 1.5rem;
+    border: 2px solid;
+  }
+  .result-banner.show { display: block; }
+  .result-pass { background: var(--success-bg); border-color: var(--success); color: #14532d; }
+  .result-fail { background: var(--danger-bg); border-color: var(--danger); color: #7f1d1d; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <h1>Turnierreifeprüfung (DFB) – Interaktive Vorbereitung</h1>
+    <p>Praktischer Teil (Fechtkompass &amp; Prüfungskontrolle) und Theoretischer Teil (Prüfungsheft mit Auswertung)</p>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('praxis', this)">1. Praktischer Teil (Checklisten)</button>
+      <button class="tab-btn" onclick="switchTab('theorie', this)">2. Theoretischer Teil (Quiz &amp; Punkte)</button>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- ==================== PRAKTISCHER TEIL ==================== -->
+  <section id="praxis" class="section active">
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Fechtkompass: Selbst- und Prüfungskontrolle</h2>
+        <span class="badge badge-green" id="praxis-progress-text">0 / 0 Aktionen beherrscht</span>
+      </div>
+      <p style="margin-top:0; font-size:0.94rem;">
+        Wähle deine Waffe aus. Klicke auf eine Aktion, um die detaillierten Prüfungsmerkmale (worauf Trainer und Prüfer achten) aufzuklappen und Punkt für Punkt abzuhaken.
+      </p>
+      <div class="weapon-selector">
+        <strong>Waffe wählen:</strong>
+        <button class="weapon-btn active" onclick="selectWeapon('florett', this)">Florett</button>
+        <button class="weapon-btn" onclick="selectWeapon('degen', this)">Degen</button>
+        <button class="weapon-btn" onclick="selectWeapon('saebel', this)">Säbel</button>
+        <button class="btn-secondary" style="margin-left:auto; padding:0.4rem 0.8rem; font-size:0.85rem;" onclick="toggleAllPraxis(true)">Alle aufklappen</button>
+        <button class="btn-secondary" style="padding:0.4rem 0.8rem; font-size:0.85rem;" onclick="toggleAllPraxis(false)">Alle zuklappen</button>
+        <button class="btn-secondary" style="padding:0.4rem 0.8rem; font-size:0.85rem;" onclick="resetPraxis()">Zurücksetzen</button>
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="praxis-progress-bar"></div>
+      </div>
+    </div>
+
+    <div id="praxis-container"></div>
+  </section>
+
+  <!-- ==================== THEORETISCHER TEIL ==================== -->
+  <section id="theorie" class="section">
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Theoretischer Teil – Prüfungsbogen</h2>
+        <span class="badge badge-red" id="live-score-badge">Maximal 75 Punkte</span>
+      </div>
+      <div class="info-box">
+        <strong>Hinweise zur Bearbeitung:</strong> Bei Multiple-Choice-Fragen können <strong>eine oder mehrere Antworten</strong> richtig sein! Kreuze alle richtigen Aussagen an. Bei Freitext- und Zeichenaufgaben trage die Lösungen in die Felder ein.
+        <div class="age-select-wrap">
+          <label for="age-group"><strong>Altersklasse (Bestehensgrenze):</strong></label>
+          <select id="age-group">
+            <option value="45">U11 (mind. 45 von 75 Punkten)</option>
+            <option value="50">U13 (mind. 50 von 75 Punkten)</option>
+            <option value="55">U15 (mind. 55 von 75 Punkten)</option>
+            <option value="60" selected>ab U17 (mind. 60 von 75 Punkten)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div id="theorie-container"></div>
+
+    <div class="btn-row">
+      <button class="btn-primary" onclick="evaluateTheory()">Prüfung auswerten &amp; Punkte berechnen</button>
+      <button class="btn-secondary" onclick="resetTheory()">Alle Eingaben löschen</button>
+    </div>
+
+    <div id="theory-result" class="result-banner"></div>
+  </section>
+
+</main>
+
+<script>
+// ============================================================================
+// DATEN: PRAKTISCHER TEIL (aus Fechtkompass Florett, Degen, Säbel)
+// ============================================================================
+const praxisData = {
+  florett: {
+    name: "Florett",
+    categories: [
+      {
+        title: "Beinarbeit",
+        actions: [
+          {
+            name: "1. Fechtstellung",
+            checks: [
+              "Füße stehen im rechten Winkel zueinander, Fußspitze des vorderen Beines zeigt nach vorn.",
+              "Abstand zwischen den Füßen beträgt ca. 1,5 Fußlängen, beide Fersen stehen auf einer (Gefechts-)Linie.",
+              "Knie des Ausfallbeins steht senkrecht über dem Fußspann; Körpergewicht gleichmäßig auf beide Beine verteilt.",
+              "Hüftgelenk, Knie und Sprunggelenk bilden eine Linie am Ausfall- und am Standbein.",
+              "Oberkörper ist aufrecht, in der Kampfstellung leicht nach vorn geneigt.",
+              "Waffenarm ist angewinkelt, Unterarm fast parallel zum Boden, Ellenbogen hängt frei (ca. 10 cm Abstand zum Körper).",
+              "Daumen ist oben lang, Zeigefinger von unten am Griff, Mittelfinger unterstützt; Daumen und Zeigefinger führen die Waffe.",
+              "Spitze ist auf den Gegner gerichtet; Knauf befindet sich am Handgelenk, Hand leicht nach außen gedreht.",
+              "Schultern sind locker und entspannt; Kopf aufrecht und leicht vorgeneigt, Blick auf den Gegner.",
+              "Waffenfreier Arm dient der Stabilisierung des Körpers und ist eingerollt."
+            ]
+          },
+          {
+            name: "2. Schritt vor / zurück aus dem Stand (Schrittlänge variieren)",
+            checks: [
+              "Schritt vor: Schnelles Vorsetzen des Unterschenkels des Ausfallbeines (ca. 1 Fußlänge), Aufsetzen der Ferse ohne Verlagerung des Körpergewichtes.",
+              "Schritt vor: Rasches Heranführen des Standbeines bis zum Gleichgewicht (gleichzeitiges Aufsetzen des Standbeines und Abrollen des Ausfallbeines auf die ganze Sohle).",
+              "Fußspitze des Ausfallbeines zeigt nach vorne, Abstand zwischen den Füßen bleibt gleich.",
+              "Schritt zurück: Nachhintensetzen des Standbeines (ca. 1 Fußlänge) bis zur vollständigen Streckung.",
+              "Schritt zurück: Aufsetzen der Fußspitze des Standbeines und Abrollen des gesamten Fußes; rasches Zurücksetzen des Ausfallbeines bis zum Gleichgewicht.",
+              "Oberkörper und Arme behalten ihre Fechtstellung bei – keine Schaukelbewegung! Schrittlängen variieren."
+            ]
+          },
+          {
+            name: "3. Rhythmisierung Doppelschritt vor / zurück (langs.-schn., schn.-langs., schn.-schn., langs.-langs.)",
+            checks: [
+              "Saubere Technik der Einzelschritte bleibt auch bei Tempowechseln erhalten.",
+              "Wechsel zwischen langsam-schnell, schnell-langsam, schnell-schnell und langsam-langsam flüssig ausführen.",
+              "Kein Wippen oder Auf- und Abhüpfen des Körperschwerpunktes (keine Schaukelbewegung).",
+              "Waffenarm und Spitze bleiben ruhig und zielgerichtet."
+            ]
+          },
+          {
+            name: "4. Ausfall / Schritt vor Ausfall (aufstehen in die fehlerfreie Fechtstellung)",
+            checks: [
+              "Ausfall: Die Armstreckung leitet den Ausfall ein; Unterschenkel des Ausfallbeines schnellt nach vorne.",
+              "Standbein drückt sich kräftig ab und schiebt Körper und Ferse des Ausfallbeines flach nach vorne.",
+              "Kniegelenk des Standbeines durchdrücken und gleichzeitig den waffenfreien Arm aus dem Ellenbogengelenk nach hinten schlagen.",
+              "Ferse setzt flach auf, Fuß rollt auf die ganze Sohle ab; Körper in der Ausfallstellung muskulär abfangen.",
+              "Ausfallstellung: Füße auf Gefechtslinie im rechten Winkel; Ausfallbein im rechten Winkel gebeugt, Standbein völlig durchgestreckt.",
+              "Ausfallstellung: Rumpf aufrecht, leicht vorgeneigt, Schultern locker; Arme bilden eine gerade Linie (Daumen der waffenfreien Hand zeigt nach oben).",
+              "Schritt vor-Ausfall: Fließender Anfang des Schritts mit Bedrohungsbewegung der Spitze, sofort kurzes aktives Nachsetzen des Standbeins, Strecken des Waffenarms und kräftiger Abstoß.",
+              "Aufstehen in die fehlerfreie Fechtstellung ohne Gleichgewichtsverlust."
+            ]
+          }
+        ]
+      },
+      {
+        title: "Stoßbewegungen",
+        actions: [
+          {
+            name: "1. Gerader Stoß im Stand",
+            checks: [
+              "Energisches, zielstrebiges Strecken des Waffenarmes auf der Schulter-Ellbogen-Faust-Klingen-Linie (Oberkörper bleibt ruhig).",
+              "Klingenspitze wird auf dem kürzesten Weg zur Trefffläche geführt; beim Auftreffen biegt sich die Klinge nach oben.",
+              "Finger erzeugen einen energischen Waffendruck im Stoßmoment.",
+              "Arm und Waffe bilden eine gerade Linie, Schultern sind entspannt, Blick auf den Gegner."
+            ]
+          },
+          {
+            name: "2. Gerader Stoß mit Schritt vor",
+            checks: [
+              "Die Beinbewegung beginnt erst dann, wenn der Arm vollständig gestreckt wurde.",
+              "Schulter locker hängen lassen, nicht überstrecken oder hochziehen.",
+              "Sauberer Schritt vor mit stabiler Balance im Treffmoment."
+            ]
+          },
+          {
+            name: "3. Gerader Stoß nach Schritt zurück",
+            checks: [
+              "Erst nach dem Schritt zurück (Körperparade) beginnt die Stoßbewegung.",
+              "Schnelles, zielstrebiges Strecken des Waffenarmes aus sicherem Abstand."
+            ]
+          },
+          {
+            name: "4. Gerader Stoß mit Ausfall (aus mittlerer Mensur)",
+            checks: [
+              "Armstreckung geht der Beinbewegung voraus (erst Arm, dann Ausfall).",
+              "Treffer kommt vor oder exakt mit dem Aufsetzen des vorderen Fußes an.",
+              "Saubere, tiefe und stabile Ausfallstellung."
+            ]
+          },
+          {
+            name: "5. Gerader Stoß mit Schritt vor Ausfall (aus weiter Mensur)",
+            checks: [
+              "Angemessene Einschätzung der weiten Mensur.",
+              "Fließender Übergang vom Schritt vor in die Armstreckung und den kräftigen Ausfall.",
+              "Klinge biegt sich beim Treffer sauber nach oben."
+            ]
+          },
+          {
+            name: "6. Stoß mit Umgehungsbewegung (Halbkreisbewegung / Kreisbewegung)",
+            checks: [
+              "Die Umgehungsbewegung um die gegnerische Klinge wird fließend durchgeführt.",
+              "Die Klingenspitze beschreibt dabei ein „V“ (bzw. kleine Kreis-/Halbkreisbewegung).",
+              "Die Umgehungsbewegung wird feinmotorisch mit den Fingerspitzen ausgeführt (nicht aus der Schulter)."
+            ]
+          }
+        ]
+      },
+      {
+        title: "Fechtaktionen Angriff",
+        actions: [
+          {
+            name: "1. Direkter Angriff mit Ausfall / Schritt vor Ausfall",
+            checks: [
+              "Erfolgt in einem Fechttempo direkt in die geöffnete gegnerische Blöße.",
+              "Auf kürzestem Weg ohne Zwischenbewegung ausführen.",
+              "Auf richtige Mensur und richtiges Tempo achten."
+            ]
+          },
+          {
+            name: "2. Angriff mit Umgehungsbewegung mit Ausfall",
+            checks: [
+              "Erfolgt aus der gegnerischen Bindung oder Berührung heraus.",
+              "Mit einer „V“-Bewegung (oder Coupé um die Spitze) die gegnerische Klinge umgehen, um eine offene Trefffläche zu erreichen.",
+              "Direkter Abschluss mit gestrecktem Arm und Ausfall."
+            ]
+          },
+          {
+            name: "3. Angriff mit Quart-Battuta direkter Ausfall",
+            checks: [
+              "Battuta (Quart) ist ein kurzer, knackiger Schlag auf die gegnerische Klinge (Klingenschwäche / Klingenmitte).",
+              "Durch Anspannung der Hand- und Fingermuskulatur in der Endposition wird die Waffe fixiert (kein Nachschwingen).",
+              "Die Battuta erfolgt vor der Armstreckung und dem Ausfall; Mensur und Tempo beachten."
+            ]
+          },
+          {
+            name: "4. Angriff mit Stoßfinte, Umgehungsstoß mit Ausfall (in 3–5 Treffflächen)",
+            checks: [
+              "Stoßfinte fordert die gegnerische Parade heraus und öffnet eine neue Blöße.",
+              "Waffenarm wird noch nicht ganz endgradig, aber zielstrebig und energisch gestreckt.",
+              "Sobald der Gegner pariert, folgt die rechtzeitige Umgehung mit den Fingern sowie der endgültige Stoß mit Ausfall (variabel in verschiedene Treffflächen)."
+            ]
+          }
+        ]
+      },
+      {
+        title: "Fechtaktionen Verteidigung",
+        actions: [
+          {
+            name: "1. Quart-Parade halten (im Stand / Schritt zurück) – direkte / indirekte Riposte im Stand / mit Ausfall",
+            checks: [
+              "Schützt die obere-innere Blöße; Unterarm bewegt sich parallel zum Boden etwas nach innen.",
+              "Faust beschreibt eine halbe Drehung nach innen (Handrücken ist zu sehen), Arm schiebt leicht nach vorn.",
+              "Arm und Glocke sind in gleicher Höhe; Spitze bleibt weitestgehend auf den Gegner gerichtet.",
+              "Bewegung erfolgt energisch, aber deutlich begrenzt mit dem Unterarm; Parade mit der eigenen Klingenstärke nehmen.",
+              "Riposte: Zu Beginn des Armstreckens Hand zurückdrehen (Daumen oben). Bei indirekter Riposte Beine länger zurückhalten für die Umgehung."
+            ]
+          },
+          {
+            name: "2. Sixt-Parade halten (im Stand / Schritt zurück) – direkte / indirekte Riposte im Stand / mit Ausfall",
+            checks: [
+              "Schützt die obere-äußere Blöße; Unterarm ist gebeugt, Faust dreht leicht nach außen.",
+              "Arm schiebt leicht nach vorn, Ellenbogen ca. 10–15 cm vor der Flanke, Glocke steht zwischen Brust und Taille.",
+              "Spitze ist weitestgehend auf den Gegner, leicht nach oben-außen gerichtet.",
+              "Waffendrehung mit der Hand nach außen; Parade mit der eigenen Klingenstärke ausführen.",
+              "Anschließend präzise direkte oder indirekte Riposte im Stand oder mit Ausfall."
+            ]
+          },
+          {
+            name: "3. Oktav-Parade halten (im Stand / Schritt zurück) – direkte / indirekte Riposte im Stand / mit Ausfall",
+            checks: [
+              "Schützt die untere-äußere Blöße; Hand und Spitze beschreiben einen kleinen, flachen Halbkreis nach unten-außen.",
+              "Arm schiebt leicht nach vorn-außen; Hand wird etwas nach unten gebeugt, Daumen bleibt oben sichtbar.",
+              "Spitze bleibt weitestgehend auf den Gegner gerichtet; Parade mit der Klingenstärke ausführen.",
+              "Anschließend präzise direkte oder indirekte Riposte im Stand oder mit Ausfall."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+
+  degen: {
+    name: "Degen",
+    categories: [
+      {
+        title: "Beinarbeit",
+        actions: [
+          {
+            name: "1. Fechtstellung",
+            checks: [
+              "Füße stehen im rechten Winkel zueinander, Fußspitze des vorderen Beines zeigt nach vorn, Abstand 1,5 Fußlängen, beide Fersen auf einer Gefechtslinie.",
+              "Knie des Ausfallbeins senkrecht über dem Fußspann; Körpergewicht gleichmäßig verteilt.",
+              "Hüftgelenk, Knie und Sprunggelenk bilden eine Linie am Ausfall- und Standbein.",
+              "Oberkörper aufrecht, leicht nach vorn geneigt; Waffenarm angewinkelt, Unterarm fast parallel zum Boden, Ellenbogen ca. 10 cm vom Körper.",
+              "Daumen oben lang, Zeigefinger von unten am Griff, Mittelfinger unterstützt; Spitze auf Gegner gerichtet.",
+              "Knauf am Handgelenk, Hand leicht nach außen gedreht; Schultern locker, Blick zum Gegner, waffenfreier Arm eingerollt."
+            ]
+          },
+          {
+            name: "2. Schritt vor / zurück aus dem Stand (Schrittlänge variieren)",
+            checks: [
+              "Schnelles Vorsetzen des Unterschenkels des Ausfallbeines (ca. 1 Fußlänge), Aufsetzen der Ferse ohne Gewichtsverlagerung.",
+              "Rasches Heranführen des Standbeines bis zum Gleichgewicht, Abrollen des Ausfallbeines auf die ganze Sohle.",
+              "Schritt zurück: Nachhintensetzen des Standbeines (ca. 1 Fußlänge), Aufsetzen der Fußspitze, Abrollen, rasches Zurücksetzen des Ausfallbeines.",
+              "Keine Schaukelbewegung; Schrittlängen und Rhythmen variieren."
+            ]
+          },
+          {
+            name: "3. Rhythmisierung Doppelschritt vor / zurück (langs.-schn., schn.-langs., schn.-schn., langs.-langs.)",
+            checks: [
+              "Tempowechsel (langsam-schnell, schnell-langsam, schnell-schnell, langsam-langsam) sauber und kontrolliert ausführen.",
+              "Oberkörper und Waffenhand bleiben ruhig, Distanzkontrolle (Mensur) bleibt gewahrt."
+            ]
+          },
+          {
+            name: "4. Ausfall / Schritt vor Ausfall (aufstehen in die fehlerfreie Fechtstellung)",
+            checks: [
+              "Armstreckung leitet den Ausfall ein; Unterschenkel schnellt vor, Standbein drückt sich kräftig ab.",
+              "Kniegelenk des Standbeines durchdrücken, waffenfreien Arm nach hinten schlagen, Ferse flach aufsetzen und abrollen.",
+              "Ausfallstellung: Ausfallbein im rechten Winkel gebeugt, Standbein durchgestreckt, Arme in einer geraden Linie (Daumen der waffenfreien Hand oben).",
+              "Schritt vor-Ausfall: Fließender Beginn mit Bedrohung der Spitze, kurzes Nachsetzen des Standbeins, Streckung und Abstoß.",
+              "Sauberes Aufstehen zurück in die fehlerfreie Fechtstellung."
+            ]
+          }
+        ]
+      },
+      {
+        title: "Stoßbewegungen",
+        actions: [
+          {
+            name: "1. Gerader Stoß im Stand",
+            checks: [
+              "Energisches, zielstrebiges Strecken des Waffenarmes auf der Schulter-Ellbogen-Faust-Klingen-Linie.",
+              "Klingenspitze auf dem kürzesten Weg zur Trefffläche (inkl. Hand/Unterarm/Bein im Degen); beim Auftreffen biegt sich die Klinge nach oben.",
+              "Energischer Waffendruck der Finger im Stoßmoment; Schultern entspannt."
+            ]
+          },
+          {
+            name: "2. Gerader Stoß mit Schritt vor",
+            checks: [
+              "Beinbewegung beginnt erst, wenn der Arm vollständig gestreckt wurde.",
+              "Schulter locker lassen, nicht hochziehen."
+            ]
+          },
+          {
+            name: "3. Gerader Stoß nach Schritt zurück",
+            checks: [
+              "Während bzw. unmittelbar nach dem Schritt zurück wird das Standbein nach hinten gesetzt.",
+              "Kontrollierter Gegenstoß / Stoß aus der Distanz."
+            ]
+          },
+          {
+            name: "4. Gerader Stoß mit Ausfall (aus mittlerer Mensur)",
+            checks: [
+              "Erst vollständige Armstreckung (Deckung durch die Glocke!), dann Ausfall.",
+              "Stabile Ausfallstellung im Treffmoment."
+            ]
+          },
+          {
+            name: "5. Gerader Stoß mit Schritt vor Ausfall (aus weiter Mensur)",
+            checks: [
+              "Fließende Kombination aus Schritt vor, Armstreckung und Ausfall aus weiter Mensur."
+            ]
+          },
+          {
+            name: "6. Stoß mit Umgehungsbewegung (Halbkreisbewegung / Kreisbewegung)",
+            checks: [
+              "Umgehungsbewegung um die gegnerische Klinge fließend mit den Fingerspitzen ausführen.",
+              "Klingenspitze beschreibt ein enges „V“ oder eine enge Kreis-/Halbkreisbewegung."
+            ]
+          }
+        ]
+      },
+      {
+        title: "Fechtaktionen Angriff",
+        actions: [
+          {
+            name: "1. Direkter Angriff mit Ausfall / Schritt vor Ausfall",
+            checks: [
+              "In einem Fechttempo direkt in die geöffnete gegnerische Blöße (z. B. Arm, Rumpf, Bein) auf kürzestem Weg.",
+              "Ohne Zwischenbewegung ausführen."
+            ]
+          },
+          {
+            name: "2. Angriff mit Umgehungsbewegung mit Ausfall",
+            checks: [
+              "Aus gegnerischer Bindung/Berührung mit einer engen „V“-Bewegung (oder Coupé um die Spitze) umgehen.",
+              "Direkter Stoß mit Ausfall in die geöffnete Blöße."
+            ]
+          },
+          {
+            name: "3. Angriff mit Sixt-Bindung Gleitstoß direkt mit Ausfall",
+            checks: [
+              "Erfassen der gegnerischen Klinge in Sixt-Bindung.",
+              "Beim Nachvornegleiten wird die gegnerische Klinge nicht verlassen; gleichzeitig beginnt der Ausfall.",
+              "Treffer kommt oben außen auf; die Faust bleibt im Endstoß fest außen stehen (Schutz durch die Glocke)."
+            ]
+          },
+          {
+            name: "4. Angriff mit Stoßfinte, Umgehungsstoß mit Ausfall (in 3–5 Treffflächen)",
+            checks: [
+              "Stoßfinte fordert Reaktion/Parade des Gegners heraus (Waffenarm zielstrebig strecken, noch nicht endgradig).",
+              "Rechtzeitige Umgehung mit den Fingerspitzen und Stoß mit Ausfall in verschiedene Treffflächen (Hand, Arm, Brust, Oberschenkel)."
+            ]
+          }
+        ]
+      },
+      {
+        title: "Fechtaktionen Verteidigung",
+        actions: [
+          {
+            name: "1. Körperparade durch Ausweichen, Angriffsübernahme (Übernahme direkt mit Ausfall)",
+            checks: [
+              "Schnelles Zurückweichen, um den gegnerischen Angriff ins Leere laufen zu lassen.",
+              "Dabei innerhalb der kritischen Mensur bleiben und keine unnötigen Klingenbewegungen machen.",
+              "Nach Beendigung des gegnerischen Angriffs sofortiger Beginn mit dem eigenen Angriff (direkt mit Ausfall)."
+            ]
+          },
+          {
+            name: "2. Direkter Stoß mit Schritt zurück (der Stoß erfolgt mit Zurücksetzen des Standbeines)",
+            checks: [
+              "Während des geraden Stoßes (Tempo- / Gegenstoß) wird gleichzeitig das Standbein nach hinten gesetzt.",
+              "Nach dem Aufkommen des Treffers wird das Ausfallbein sauber in die Fechtstellung nachgesetzt."
+            ]
+          },
+          {
+            name: "3. Quart / Sixt / Oktav-Parade halten (Stand / mit Schritt zurück) – direkte / indirekte Gleitstoßriposte im Stand / mit Ausfall",
+            checks: [
+              "Quart-Parade: Schützt obere-innere Blöße; Unterarm parallel zum Boden nach innen, Faust halbe Drehung nach innen, Parade mit Klingenstärke.",
+              "Sixt-Parade: Schützt obere-äußere Blöße; Faust dreht leicht nach außen, Glocke zwischen Brust und Taille, Ellenbogen 10–15 cm vor Flanke.",
+              "Oktav-Parade: Schützt untere-äußere Blöße; kleiner flacher Halbkreis nach unten-außen, Daumen bleibt oben sichtbar.",
+              "Bei Schritt zurück: Sixt-Parade und Aufkommen des Ausfallbeins erfolgen gleichzeitig.",
+              "Gleitstoß-Riposte: Beim Nachvornegleiten die gegnerische Klinge kontrolliert halten und direkt oder indirekt im Stand / mit Ausfall treffen."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+
+  saebel: {
+    name: "Säbel",
+    categories: [
+      {
+        title: "Beinarbeit",
+        actions: [
+          {
+            name: "1. Fechtstellung",
+            checks: [
+              "Füße im rechten Winkel zueinander, Fußspitze vorn zeigt nach vorn, Abstand 1,5 Fußlängen, beide Fersen auf einer Gefechtslinie.",
+              "Knie des Ausfallbeins senkrecht über dem Fußspann; Körpergewicht gleichmäßig verteilt.",
+              "Oberkörper aufrecht, leicht vorgeneigt; Waffenarm angewinkelt, Unterarm fast parallel zum Boden, Ellenbogen locker in Höhe des Hüftknochens.",
+              "Daumen oben lang, Zeigefinger von unten am Griff, Mittelfinger unterstützt; Spitze zeigt in Richtung des gegnerischen Kopfes.",
+              "Schultern locker und entspannt, Kopf aufrecht, Blick auf den Gegner; waffenfreier Arm eingerollt."
+            ]
+          },
+          {
+            name: "2. Schritt vor / zurück aus dem Stand (Schrittlänge variieren)",
+            checks: [
+              "Schnelles Vorsetzen des Unterschenkels des Ausfallbeines (ca. 1 Fußlänge), Ferse aufsetzen ohne Gewichtsverlagerung.",
+              "Rasches Heranführen des Standbeines bis zum Gleichgewicht, Abrollen des Ausfallbeines auf die ganze Sohle.",
+              "Schritt zurück: Standbein ca. 1 Fußlänge nach hinten setzen, Fußspitze aufsetzen und abrollen, Ausfallbein rasch zurücksetzen.",
+              "Keine Schaukelbewegung; Schrittlängen und Rhythmen variieren."
+            ]
+          },
+          {
+            name: "3. Ausfall (fehlerfreie Ausfallstellung)",
+            checks: [
+              "Armstreckung / Hiebeinleitung geht dem Ausfall voraus; Unterschenkel schnellt nach vorne, Standbein drückt kräftig ab.",
+              "Kniegelenk des Standbeines durchdrücken, waffenfreien Arm nach hinten schlagen, Ferse flach aufsetzen.",
+              "Ausfallstellung: Füße auf Gefechtslinie im rechten Winkel; Ausfallbein im rechten Winkel gebeugt, Standbein gestreckt, Arme in gerader Linie (Daumen der waffenfreien Hand oben)."
+            ]
+          },
+          {
+            name: "4. Schritt vor Ausfall (aufstehen in die fehlerfreie Fechtstellung)",
+            checks: [
+              "Fließender Anfang des Schritts mit dem Ausfallbein mit gleichzeitiger Bedrohungsbewegung der Spitze.",
+              "Sofort kurzes, aktives Nachsetzen des Standbeins sowie Strecken des Waffenarms bei kräftigem Abstoß.",
+              "Sauberes Aufstehen zurück in die fehlerfreie Fechtstellung."
+            ]
+          }
+        ]
+      },
+      {
+        title: "Hieb- / Stoßbewegungen",
+        actions: [
+          {
+            name: "1. Kopf- / Brust- / Flankhieb im Stand",
+            checks: [
+              "Drehen der Schneide mit Zeigefinger und Daumen in Richtung der jeweiligen Trefffläche (Kopf, Brust oder Flanke).",
+              "Gleichzeitige Beschleunigung der Waffenspitze Richtung Trefffläche bei Streckung des Waffenarmes.",
+              "Die Spitze der Waffe sollte als erstes die Trefffläche berühren.",
+              "Schultern sind entspannt und die Glocke steht niedriger als die Spitze."
+            ]
+          },
+          {
+            name: "2. Kopf- / Brust- / Flankhieb mit Ausfall",
+            checks: [
+              "Hiebbewegung aus den Fingern einleiten, Arm strecken und kräftigen Ausfall anschließen.",
+              "Treffer mit der Schneide (Spitze berührt zuerst) im Moment der stabilen Ausfallstellung."
+            ]
+          },
+          {
+            name: "3. Kopf- / Brust- / Flankhieb mit Schritt vor",
+            checks: [
+              "Während des Schritts vor Säbel kontrolliert führen, ohne auszuholen.",
+              "Sauberer Hieb in Kopf-, Brust- oder Flankenblöße mit Streckung des Waffenarmes."
+            ]
+          },
+          {
+            name: "4. Kopfhieb nach Schritt zurück",
+            checks: [
+              "Schnelles Zurückweichen (Schritt zurück), um den gegnerischen Angriff ins Leere laufen zu lassen.",
+              "Unmittelbar danach Beschleunigung der Schneide/Spitze zum Kopfhieb mit gestrecktem Arm."
+            ]
+          },
+          {
+            name: "5. Stoß mit Ausfall",
+            checks: [
+              "Drehen der Schneide mit Daumen und Zeigefinger, sodass die Spitze die gegnerische Brust bedroht.",
+              "Der Daumenrücken zeigt beim Rechtshänder nach links.",
+              "Danach zielstrebige Streckung des Armes mit Ausfall, bis die Spitze trifft."
+            ]
+          }
+        ]
+      },
+      {
+        title: "Fechtaktionen Angriff",
+        actions: [
+          {
+            name: "1. Direkter Angriff mit Schritt vor Ausfall Kopfhieb",
+            checks: [
+              "Während dem Schritt vor den Säbel in Terzposition halten.",
+              "Mit dem Ausfall beginnt der Kopfhieb; beim Übergang zum Ausfall gibt es keine Pause.",
+              "Klinge ohne Ausholbewegung zur Trefffläche beschleunigen; Treffer mit der Schneide, stabile Ausfallstellung mit gestrecktem Arm."
+            ]
+          },
+          {
+            name: "2. Direkter Angriff mit Schritt vor Ausfall Brusthieb",
+            checks: [
+              "Während dem Schritt vor den Säbel in Terzposition halten.",
+              "Ohne Pause und ohne Ausholbewegung mit dem Ausfall den Brusthieb ausführen.",
+              "Treffer mit der Schneide bei absolut gestrecktem Arm in stabiler Ausfallstellung."
+            ]
+          },
+          {
+            name: "3. Direkter Angriff mit Schritt vor Ausfall Flankenhieb",
+            checks: [
+              "Während dem Schritt vor den Säbel in Terzposition halten.",
+              "Ohne Pause und ohne Ausholbewegung mit dem Ausfall den Flankenhieb ausführen.",
+              "Treffer mit der Schneide bei absolut gestrecktem Arm in stabiler Ausfallstellung."
+            ]
+          }
+        ]
+      },
+      {
+        title: "Fechtaktionen Verteidigung",
+        actions: [
+          {
+            name: "1. Körperparade durch Ausweichen, Angriffsübernahme (Angriffsübernahme erfolgt direkt ohne Pause)",
+            checks: [
+              "Rechtzeitiges Zurückweichen aus der Reichweite des gegnerischen Hiebes, ohne die kritische Mensur zu verlieren.",
+              "Direkte Angriffsübernahme ohne Pause mit eigenem Angriff (Schritt vor / Ausfall)."
+            ]
+          },
+          {
+            name: "2. Terz-Parade halten (im Stand / mit Schritt zurück) – direkte Riposte auf Kopf / Brust / Flanke im Stand / mit Ausfall",
+            checks: [
+              "Schützt die obere-äußere Blöße; Unterarm ist parallel zum Boden, Hand ist nach außen gedreht (45–90 Grad).",
+              "Ellenbogen hängt locker in Höhe des Hüftknochens; Spitze steht fast gerade über der Glocke.",
+              "Bewegung ist begrenzt: Die Parade wird „gestellt“ und nicht „geschlagen“ (keine aktive Bewegung gegen das gegnerische Eisen).",
+              "Direkte Riposte (Drehen der Schneide mit Daumen/Zeigefinger, Spitze berührt zuerst) auf Kopf, Brust oder Flanke."
+            ]
+          },
+          {
+            name: "3. Quart-Parade halten (im Stand / mit Schritt zurück) – direkte Riposte auf Kopf / Brust / Flanke im Stand / mit Ausfall",
+            checks: [
+              "Schützt die obere-innere Blöße; Daumen und Zeigefinger führen die Klinge nach innen, Unterarm bewegt sich parallel zum Boden nach innen.",
+              "Ellenbogen verbleibt in Höhe des Hüftknochens, Hand steht vor dem Körper, Spitze fast gerade über der Glocke.",
+              "Parade wird „gestellt“ und nicht „geschlagen“.",
+              "Direkte Riposte mit Armstreckung auf Kopf, Brust oder Flanke im Stand oder mit Ausfall."
+            ]
+          },
+          {
+            name: "4. Quint-Parade halten (im Stand / mit Schritt zurück) – direkte Riposte auf Kopf / Brust / Flanke im Stand / mit Ausfall",
+            checks: [
+              "Schützt die Trefffläche Kopf; Oberarm steht parallel zum Boden, Ellenbogen zeigt Richtung Gegner (Winkel ca. 90 Grad).",
+              "Daumeninnenseite zeigt nach oben; Winkel zwischen Hand und Säbel ist größer als 90 Grad.",
+              "Spitze steht leicht ansteigend zur Glocke vor dem eigenen Kopf; Parade wird „gestellt“ und nicht „geschlagen“.",
+              "Direkte Riposte mit Armstreckung auf Kopf, Brust oder Flanke im Stand oder mit Ausfall."
+            ]
+          }
+        ]
+      }
+    ]
+  }
+};
+
+let currentWeapon = 'florett';
+// Speichert abgehakte Checkpunkte: key = "weapon-catIdx-actIdx-chkIdx"
+const praxisState = {};
+
+function renderPraxis() {
+  const container = document.getElementById('praxis-container');
+  const data = praxisData[currentWeapon];
+  let html = '';
+
+  data.categories.forEach((cat, cIdx) => {
+    html += `<div class="praxis-category"><h3>${cat.title}</h3>`;
+    cat.actions.forEach((act, aIdx) => {
+      const actionKey = `${currentWeapon}-${cIdx}-${aIdx}`;
+      const allChecked = act.checks.every((_, kIdx) => praxisState[`${actionKey}-${kIdx}`]);
+      html += `
+        <div class="action-item ${allChecked ? 'completed' : ''}" id="card-${actionKey}">
+          <div class="action-head" onclick="toggleActionBody('${actionKey}', event)">
+            <div class="action-title-wrap">
+              <input type="checkbox" class="action-master-cb" id="master-${actionKey}" ${allChecked ? 'checked' : ''}
+                onclick="toggleAllChecksForAction('${actionKey}', ${cIdx}, ${aIdx}, event)" title="Komplette Aktion als beherrscht markieren">
+              <span>${act.name}</span>
+            </div>
+            <span class="badge" id="count-${actionKey}">
+              ${act.checks.filter((_, kIdx) => praxisState[`${actionKey}-${kIdx}`]).length} / ${act.checks.length} Merkmale ▾
+            </span>
+          </div>
+          <div class="action-body" id="body-${actionKey}">
+            <div style="font-size:0.85rem; font-weight:700; color:var(--primary); margin-bottom:0.4rem;">
+              Worauf geachtet werden muss (Checkliste):
+            </div>
+            <ul class="checklist-ul">
+              ${act.checks.map((chk, kIdx) => {
+                const chkId = `${actionKey}-${kIdx}`;
+                const isChk = !!praxisState[chkId];
+                return `
+                  <li>
+                    <input type="checkbox" id="cb-${chkId}" ${isChk ? 'checked' : ''}
+                      onchange="onSingleCheckChange('${actionKey}', ${cIdx}, ${aIdx}, ${kIdx}, this.checked)">
+                    <label for="cb-${chkId}">${chk}</label>
+                  </li>
+                `;
+              }).join('')}
+            </ul>
+          </div>
+        </div>
+      `;
+    });
+    html += `</div>`;
+  });
+
+  container.innerHTML = html;
+  updatePraxisProgress();
+}
+
+function selectWeapon(weapon, btn) {
+  currentWeapon = weapon;
+  document.querySelectorAll('.weapon-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderPraxis();
+}
+
+function toggleActionBody(actionKey, event) {
+  if (event.target.type === 'checkbox') return;
+  const body = document.getElementById(`body-${actionKey}`);
+  body.classList.toggle('open');
+}
+
+function toggleAllChecksForAction(actionKey, cIdx, aIdx, event) {
+  event.stopPropagation();
+  const checked = event.target.checked;
+  const act = praxisData[currentWeapon].categories[cIdx].actions[aIdx];
+  act.checks.forEach((_, kIdx) => {
+    const chkId = `${actionKey}-${kIdx}`;
+    praxisState[chkId] = checked;
+    const cb = document.getElementById(`cb-${chkId}`);
+    if (cb) cb.checked = checked;
+  });
+  syncActionCardUI(actionKey, cIdx, aIdx);
+  updatePraxisProgress();
+}
+
+function onSingleCheckChange(actionKey, cIdx, aIdx, kIdx, checked) {
+  praxisState[`${actionKey}-${kIdx}`] = checked;
+  syncActionCardUI(actionKey, cIdx, aIdx);
+  updatePraxisProgress();
+}
+
+function syncActionCardUI(actionKey, cIdx, aIdx) {
+  const act = praxisData[currentWeapon].categories[cIdx].actions[aIdx];
+  const doneCount = act.checks.filter((_, kIdx) => praxisState[`${actionKey}-${kIdx}`]).length;
+  const allDone = doneCount === act.checks.length;
+  const card = document.getElementById(`card-${actionKey}`);
+  const master = document.getElementById(`master-${actionKey}`);
+  const badge = document.getElementById(`count-${actionKey}`);
+  if (card) card.classList.toggle('completed', allDone);
+  if (master) master.checked = allDone;
+  if (badge) badge.textContent = `${doneCount} / ${act.checks.length} Merkmale ▾`;
+}
+
+function updatePraxisProgress() {
+  const data = praxisData[currentWeapon];
+  let totalActions = 0;
+  let masteredActions = 0;
+  data.categories.forEach((cat, cIdx) => {
+    cat.actions.forEach((act, aIdx) => {
+      totalActions++;
+      const allDone = act.checks.every((_, kIdx) => praxisState[`${currentWeapon}-${cIdx}-${aIdx}-${kIdx}`]);
+      if (allDone) masteredActions++;
+    });
+  });
+  const pct = totalActions ? Math.round((masteredActions / totalActions) * 100) : 0;
+  document.getElementById('praxis-progress-text').textContent = `${masteredActions} / ${totalActions} Aktionen beherrscht (${pct}%)`;
+  document.getElementById('praxis-progress-bar').style.width = `${pct}%`;
+}
+
+function toggleAllPraxis(open) {
+  document.querySelectorAll('.action-body').forEach(el => {
+    el.classList.toggle('open', open);
+  });
+}
+
+function resetPraxis() {
+  Object.keys(praxisState).forEach(k => {
+    if (k.startsWith(currentWeapon + '-')) delete praxisState[k];
+  });
+  renderPraxis();
+}
+
+// ============================================================================
+// DATEN: THEORETISCHER TEIL (Prüfungsheft & Musterlösung = 75 Punkte gesamt)
+// Punkteschlüssel: 34 MC-Fragen à 1,5 Pkt = 51 Pkt + 6 Freitext/Zeichenaufgaben (24 Pkt) = 75 Pkt
+// ============================================================================
+const theoryParts = [
+  {
+    title: "Teil A: Allgemeiner Teil",
+    questions: [
+      {
+        id: "A1", type: "mc", points: 1.5,
+        text: "Wie heißt die internationale Fechtvereinigung?",
+        options: { A: "FILA", B: "FIFA", C: "FIE" },
+        correct: ["C"],
+        explanation: "FIE = Fédération Internationale d’Escrime."
+      },
+      {
+        id: "A2", type: "mc", points: 1.5,
+        text: "Wie heißt die nationale Fechtvereinigung?",
+        options: { A: "DHB", B: "DFB", C: "DOSB" },
+        correct: ["B"],
+        explanation: "DFB = Deutscher Fechter-Bund."
+      },
+      {
+        id: "A3", type: "mc", points: 1.5,
+        text: "Welches ist die internationale Fechtsprache?",
+        options: { A: "italienisch", B: "englisch", C: "französisch" },
+        correct: ["C"],
+        explanation: "Französisch ist die offizielle internationale Kommandosprache auf der Planche."
+      },
+      {
+        id: "A4", type: "free_list", points: 3,
+        text: "Nenne drei Waffen des Sportfechtens!",
+        count: 3,
+        placeholders: ["Waffe 1", "Waffe 2", "Waffe 3"],
+        expected: ["degen", "florett", "säbel"],
+        solutionText: "1. Degen, 2. Florett, 3. Säbel"
+      },
+      {
+        id: "A5", type: "mc", points: 1.5,
+        text: "Welche Waffen sind reine Stoßwaffen?",
+        options: { A: "Degen und Säbel", B: "Florett und Degen", C: "Säbel und Florett" },
+        correct: ["B"],
+        explanation: "Florett und Degen sind reine Stoßwaffen; der Säbel ist eine Hieb- und Stoßwaffe."
+      },
+      {
+        id: "A6", type: "mc", points: 1.5,
+        text: "Welche der angegebenen Altersklassen gibt es im Deutschen Sportfechten?",
+        options: { A: "U13, U15", B: "F-Jugend, Anfänger", C: "Senioren, Veteranen" },
+        correct: ["A", "C"],
+        explanation: "Sowohl U13/U15 als auch Senioren und Veteranen sind offizielle Altersklassen im DFB."
+      },
+      {
+        id: "A7", type: "mc", points: 1.5,
+        text: "Welche Dokumente muss ein Fechter vor dem Turnier vorlegen?",
+        options: {
+          A: "Fechtpass",
+          B: "Lizenz (Jahresmarke bzw. Fechtpassverlängerung)",
+          C: "Gesundheitsattest bei Fechtern unter 18 Jahren"
+        },
+        correct: ["A", "B", "C"],
+        explanation: "Alle drei Nachweise (Fechtpass, gültige Jahreslizenz und bei Minderjährigen das ärztliche Attest) sind erforderlich."
+      },
+      {
+        id: "A8", type: "mc", points: 1.5,
+        text: "Welche Waffen (keine Miniwaffen) sind unterschiedlich lang?",
+        options: { A: "alle", B: "Säbel und Florett", C: "Degen und Florett" },
+        correct: ["B"],
+        explanation: "Florett und Degen haben eine Gesamtlänge von max. 110 cm, der Säbel ist kürzer (max. 105 cm)."
+      },
+      {
+        id: "A9_A10", type: "piste", points: 7,
+        text: "A9 & A10: Benenne die Linien der Fechtbahn (A9) und trage die Maße zwischen den Pfeilen ein (A10)!",
+        solutionText: "Linien (von links nach rechts): Endlinie – Startlinie – Mittellinie – Startlinie – Endlinie. Maße: Breite 1,5–2 m; Endlinie bis Startlinie jeweils 5 m; Startlinie bis Mittellinie jeweils 2 m; Gesamtlänge 14 m."
+      }
+    ]
+  },
+  {
+    title: "Teil B: Ausrüstung",
+    questions: [
+      {
+        id: "B1", type: "mc", points: 1.5,
+        text: "Aus welchen Teilen besteht die Fechtkleidung verpflichtend?",
+        options: { A: "Maske", B: "Fechtjacke, Fechthose, Unterziehweste", C: "Handschuh" },
+        correct: ["A", "B", "C"],
+        explanation: "Alle aufgeführten Teile (inkl. Fechtstrümpfe) gehören zur vorgeschriebenen Schutzausrüstung."
+      },
+      {
+        id: "B2", type: "mc", points: 1.5,
+        text: "Auf welchen Kleidungsstücken muss das Prüfsiegel zu finden sein?",
+        options: { A: "Maske", B: "Fechtjacke, Fechthose, im Säbel Handschuh", C: "Unterziehweste" },
+        correct: ["A", "B", "C"],
+        explanation: "Maske, Fechtjacke, Fechthose, Unterziehweste (800 N) sowie der Säbelhandschuh (800 N) benötigen ein gültiges Prüfsiegel."
+      },
+      {
+        id: "B3", type: "mc", points: 1.5,
+        text: "Wie viele Waffen und Körperkabel muss der Fechter mit an die Bahn bringen?",
+        options: { A: "2 Waffen, 1 Körperkabel", B: "1 Waffe, 2 Körperkabel", C: "2 Waffen, 2 Körperkabel" },
+        correct: ["C"],
+        explanation: "Es müssen immer mindestens 2 funktionstüchtige Waffen und 2 Körperkabel (inkl. Maskenkabel im Florett/Säbel) bereitliegen."
+      },
+      {
+        id: "B4", type: "mc", points: 1.5,
+        text: "Wie schwer ist das Gewicht, mit dem der Kampfrichter die Waffe prüft?",
+        options: { A: "Degen 500g, Florett 500g", B: "Degen 750g, Florett 500g", C: "Degen 500g, Florett 750g" },
+        correct: ["B"],
+        explanation: "Das Prüfgewicht beträgt beim Degen 750 g und beim Florett 500 g."
+      },
+      {
+        id: "B5", type: "mc", points: 1.5,
+        text: "Was ist für Fechthandschuhe vorgeschrieben?",
+        options: { A: "die Farbe", B: "die Größe", C: "darf keine Löcher und Risse aufweisen" },
+        correct: ["C"],
+        explanation: "Aus Sicherheitsgründen darf der Handschuh keinerlei Löcher oder Risse (auch keine Kabeldurchführung) haben."
+      },
+      {
+        id: "B6", type: "mc", points: 1.5,
+        text: "Wie lang müssen die Fechtstrümpfe sein?",
+        options: {
+          A: "Fechtstrümpfe können kurze Söckchen sein",
+          B: "Fechtstrümpfe sind nicht nötig",
+          C: "Fechtstrümpfe müssen bis unter die Fechthose reichen"
+        },
+        correct: ["C"],
+        explanation: "Die Strümpfe müssen die Beine vollständig bis unter die Kniebundhose bedecken."
+      },
+      {
+        id: "B7", type: "mc", points: 1.5,
+        text: "In welche Teile wird die Klinge unterteilt?",
+        options: {
+          A: "Griff, Klinge, Spitze",
+          B: "Klingenstärke, Klingenschwäche",
+          C: "Klingenstärke, Klingenmitte, Klingenschwäche"
+        },
+        correct: ["C"],
+        explanation: "Man unterscheidet Klingenstärke (nahe der Glocke), Klingenmitte und Klingenschwäche (vorderes Drittel)."
+      }
+    ]
+  },
+  {
+    title: "Teil C: Fechtkonventionen",
+    questions: [
+      {
+        id: "C1", type: "mc_silhouettes", points: 1.5,
+        text: "Ordne den schraffierten Trefferflächen die entsprechenden Waffen zu!",
+        options: {
+          A: "1 Degen, 2 Florett, 3 Säbel",
+          B: "1 Florett, 2 Säbel, 3 Degen",
+          C: "1 Säbel, 2 Degen, 3 Florett"
+        },
+        correct: ["B"],
+        explanation: "1 = nur Rumpf (Florett), 2 = Oberkörper inkl. Arme und Maske (Säbel), 3 = gesamter Körper (Degen)."
+      },
+      {
+        id: "C2", type: "mc", points: 1.5,
+        text: "Bei welchen Waffen gibt es ein Angriffsrecht?",
+        options: { A: "Florett und Degen", B: "Degen und Säbel", C: "Florett und Säbel" },
+        correct: ["C"],
+        explanation: "Florett und Säbel sind Konventionswaffen mit Treffervorrecht (Angriffsrecht)."
+      },
+      {
+        id: "C3", type: "mc", points: 1.5,
+        text: "Womit beginnt ein Angriff?",
+        options: { A: "Schritt vorwärts", B: "Armstreckung", C: "Ausfallbein" },
+        correct: ["B"],
+        explanation: "Der Angriff beginnt regeltechnisch mit dem Strecken des Waffenarmes und der Bedrohung der gültigen Trefffläche."
+      },
+      {
+        id: "C4", type: "mc", points: 1.5,
+        text: "Was ist eine Parade?",
+        options: {
+          A: "der eigene Angriff nach erfolgreicher Verteidigung",
+          B: "die Abwehr eines gegnerischen Angriffs",
+          C: "ein Angriff des Gegners"
+        },
+        correct: ["B"],
+        explanation: "Die Parade ist die Abwehr des gegnerischen Angriffs mit der eigenen Waffe."
+      },
+      {
+        id: "C5", type: "mc", points: 1.5,
+        text: "Was ist eine Riposte?",
+        options: {
+          A: "der eigene Angriff nach erfolgreicher Verteidigung",
+          B: "die Abwehr eines gegnerischen Angriffs",
+          C: "ein Angriff des Gegners"
+        },
+        correct: ["A"],
+        explanation: "Die Riposte ist der Gegenangriff unmittelbar nach einer erfolgreichen Parade."
+      },
+      {
+        id: "C6", type: "free_parades", points: 4,
+        text: "Benenne mindestens 4 Paraden!",
+        solutionText: "Mögliche Paraden: Prim, Sekond, Terz, Quart, Quint, Sixt, Septim, Oktav."
+      },
+      {
+        id: "C7", type: "free_mensur", points: 2,
+        text: "Was ist die Mensur?",
+        solutionText: "Der Abstand zwischen zwei Fechtern."
+      },
+      {
+        id: "C8", type: "mc", points: 1.5,
+        text: "Was ist eine enge Mensur?",
+        options: {
+          A: "der Gegner kann mit Armstreckung treffen",
+          B: "der Gegner kann mit Armstreckung und Ausfall treffen",
+          C: "der Gegner kann mit Schritt vor, Armstreckung und Ausfall treffen"
+        },
+        correct: ["A"],
+        explanation: "In der engen Mensur reicht bereits das bloße Strecken des Armes (ohne Beinarbeit) für einen Treffer."
+      },
+      {
+        id: "C9", type: "mc", points: 1.5,
+        text: "Was ist eine weite Mensur?",
+        options: {
+          A: "der Gegner kann mit Armstreckung treffen",
+          B: "der Gegner kann mit Armstreckung und Ausfall treffen",
+          C: "der Gegner kann mit Schritt vor, Armstreckung und Ausfall treffen"
+        },
+        correct: ["C"],
+        explanation: "In der weiten Mensur ist zusätzlich zum Ausfall mindestens ein Schritt vorwärts nötig."
+      },
+      {
+        id: "C10", type: "mc", points: 1.5,
+        text: "Erhält im Florett und Säbel jeder Fechter, der seinen Gegner trifft, automatisch einen Punkt?",
+        options: {
+          A: "ja",
+          B: "nein, es kommt auch darauf an, wer das Treffervorrecht hatte",
+          C: "nein, nur im Florett"
+        },
+        correct: ["B"],
+        explanation: "Sowohl im Florett als auch im Säbel entscheidet bei beidseitigen Treffern das Treffervorrecht (Konvention)."
+      }
+    ]
+  },
+  {
+    title: "Teil D: Verstöße und Strafen",
+    questions: [
+      {
+        id: "D1", type: "mc", points: 1.5,
+        text: "Was bedeutet eine gelbe Karte?",
+        options: { A: "Straftreffer", B: "Ausschluss vom Wettbewerb oder Turnier", C: "Verwarnung" },
+        correct: ["C"],
+        explanation: "Die gelbe Karte ist eine formelle Verwarnung ohne Punktabzug."
+      },
+      {
+        id: "D2", type: "mc", points: 1.5,
+        text: "Was bedeutet eine schwarze Karte?",
+        options: { A: "Straftreffer", B: "Ausschluss vom Wettbewerb oder Turnier", C: "Verwarnung" },
+        correct: ["B"],
+        explanation: "Die schwarze Karte führt zum sofortigen Ausschluss (Disqualifikation) vom Wettbewerb/Turnier."
+      },
+      {
+        id: "D3", type: "mc", points: 1.5,
+        text: "Was bedeutet eine rote Karte?",
+        options: { A: "Straftreffer", B: "Ausschluss vom Wettbewerb oder Turnier", C: "Verwarnung" },
+        correct: ["A"],
+        explanation: "Die rote Karte zieht einen Straftreffer (Punkt für den Gegner) nach sich."
+      },
+      {
+        id: "D4", type: "mc", points: 1.5,
+        text: "Für welche Verstöße gibt es eine gelbe Karte?",
+        options: {
+          A: "Fehlen der Ersatzwaffe an der Bahn",
+          B: "Beleidigung des Kampfrichters",
+          C: "absichtliches Schleifenlassen der Spitze auf der Bahn"
+        },
+        correct: ["A", "C"],
+        explanation: "Verstöße der 1. Gruppe (z. B. fehlende Ersatzwaffe, Schleifenlassen der Spitze) werden zunächst mit Gelb geahndet. Beleidigung gibt sofort Schwarz."
+      },
+      {
+        id: "D5", type: "mc", points: 1.5,
+        text: "Ein Fechter hat bereits eine gelbe Karte erhalten und begeht einen weiteren Verstoß. Welche Karte bekommt er mindestens?",
+        options: { A: "Gelb", B: "Rot", C: "Schwarz" },
+        correct: ["B"],
+        explanation: "Jeder weitere Verstoß desselben Fechters im selben Gefecht nach einer gelben Karte wird mindestens mit Rot (Straftreffer) bestraft."
+      },
+      {
+        id: "D6", type: "mc", points: 1.5,
+        text: "Für welche Verstöße gibt es eine schwarze Karte?",
+        options: {
+          A: "Beleidigung des Kampfrichters",
+          B: "Zuwenden des Rückens zum Gegner",
+          C: "der Gegner überschreitet die Endlinie mit beiden Füßen nach hinten"
+        },
+        correct: ["A"],
+        explanation: "Beleidigung des Kampfrichters ist ein schweres unsportliches Vergehen (4. Gruppe -> Schwarze Karte)."
+      },
+      {
+        id: "D7", type: "mc", points: 1.5,
+        text: "Wie viele gelbe Karten kann ein Fechter in einem Gefecht bekommen?",
+        options: {
+          A: "eine, unabhängig von der Art der verbliebenen Verstöße",
+          B: "das hängt von der jeweiligen Entscheidung des Kampfrichters ab",
+          C: "eine für jede Art eines Verstoßes (z. B. Waffe defekt, Kabel defekt, etc.)"
+        },
+        correct: ["A"],
+        explanation: "Pro Gefecht gibt es maximal eine gelbe Karte für einen Fechter; danach folgt bei jedem weiteren Verstoß mindestens Rot."
+      }
+    ]
+  },
+  {
+    title: "Teil E: Turnierablauf",
+    questions: [
+      {
+        id: "E1", type: "mc", points: 1.5,
+        text: "Wo stellt sich der zuerst genannte Fechter nach Aufruf durch den Kampfrichter auf?",
+        options: {
+          A: "der vom Kampfrichter zuerst aufgerufene Fechter rechts, aus Sicht des Kampfrichters (außer er ist Linkshänder und sein Gegner Rechtshänder)",
+          B: "jeder sucht sich seine Seite aus",
+          C: "der kleinere Fechter steht immer links"
+        },
+        correct: ["A"],
+        explanation: "Der zuerst aufgerufene Fechter steht rechts vom Kampfrichter (Ausnahme: Linkshänder gegen Rechtshänder)."
+      },
+      {
+        id: "E2", type: "mc", points: 1.5,
+        text: "Auf wie viele Treffer wird gefochten?",
+        options: {
+          A: "in der Runde auf 5 Treffer",
+          B: "in der Runde auf 3 Treffer, in der Direktausscheidung auf 15 Treffer",
+          C: "in der Direktausscheidung auf 10 oder 15 Treffer (je nach Altersklasse)"
+        },
+        correct: ["A", "C"],
+        explanation: "In der Vorrunde wird auf 5 Treffer gefochten, in der Direktausscheidung auf 10 (jüngere AK) bzw. 15 Treffer."
+      },
+      {
+        id: "E3", type: "mc", points: 1.5,
+        text: "Was müssen Fechter vor und nach dem Gefecht immer machen?",
+        options: { A: "Fechtgruß an der Startlinie", B: "dem Gegner die Hand geben", C: "den Melder ausschalten" },
+        correct: ["A"],
+        explanation: "Der Fechtgruß (an Gegner, Kampfrichter und Zuschauer) an der Startlinie ist vor und nach dem Gefecht Pflicht."
+      },
+      {
+        id: "E4", type: "mc", points: 1.5,
+        text: "Was wird vor einem Gefecht vom Kampfrichter nicht geprüft?",
+        options: { A: "das Prüfzeichen auf der Maske", B: "das Gesundheitsattest", C: "der Fechtpass" },
+        correct: ["B", "C"],
+        explanation: "Fechtpass und Gesundheitsattest werden bei der Anmeldung/Turnierleitung geprüft, nicht an der Bahn vom Kampfrichter."
+      },
+      {
+        id: "E5", type: "mc", points: 1.5,
+        text: "Wie lange ist die reguläre Kampfzeit in Gefechten?",
+        options: {
+          A: "in der Direktausscheidung 2x 3 Minuten (U11, U13)",
+          B: "in der Runde 5 Minuten",
+          C: "in der Runde 3 Minuten"
+        },
+        correct: ["A", "C"],
+        explanation: "Rundengefechte dauern 3 Minuten effektive Kampfzeit; in der Direktausscheidung U11/U13 sind es 2×3 Minuten (ab U15 3×3 Minuten)."
+      },
+      {
+        id: "E6", type: "mc", points: 1.5,
+        text: "Was passiert, wenn es nach Ablauf der Zeit unentschieden steht?",
+        options: {
+          A: "beide Fechter haben verloren",
+          B: "es wird vom Kampfrichter ein Vorteil ausgelost",
+          C: "es gibt eine Verlängerung von 1 Minute, wenn es danach unentschieden steht, gewinnt der Gewinner des Losens auch das Gefecht."
+        },
+        correct: ["B", "C"],
+        explanation: "Vor der 1-minütigen Verlängerung (Sudden Death) lost der Kampfrichter den Vorteil aus; fällt kein Treffer, gewinnt der Fechter mit dem Vorteil."
+      },
+      {
+        id: "E7", type: "mc", points: 1.5,
+        text: "Wo geht das Gefecht nach einem ungültigen Treffer weiter?",
+        options: {
+          A: "an der Stelle wo das Gefecht unterbrochen wurde",
+          B: "an der Startlinie",
+          C: "beide Fechter stellen sich in gleichem Abstand von der Mittellinie entfernt auf"
+        },
+        correct: ["A"],
+        explanation: "Nach einem ungültigen Treffer wird das Gefecht an der Stelle der Unterbrechung fortgesetzt (solange niemand hinter die Startlinie gedrängt würde)."
+      },
+      {
+        id: "E8", type: "mc", points: 1.5,
+        text: "Wie weit auseinander müssen sich die Fechter nach einem ungültigen Treffer aufstellen?",
+        options: {
+          A: "die Klingen dürfen sich nicht überkreuzen, wenn beide in Fechtstellung stehen",
+          B: "2 Meter, entsprechend dem Abstand zwischen den Startlinien",
+          C: "die Klingen dürfen sich nicht überkreuzen, wenn beide in Fechtstellung stehen und den Arm strecken"
+        },
+        correct: ["C"],
+        explanation: "Die Spitzen dürfen sich nicht berühren/überkreuzen, wenn beide in Fechtstellung stehen und den Waffenarm strecken."
+      },
+      {
+        id: "E9", type: "mc", points: 1.5,
+        text: "Wie muss man dem Kampfrichter anzeigen, dass eine Kampfunterbrechung erwünscht wird?",
+        options: {
+          A: "man wendet sich dem Kampfrichter zu und spricht diesen an",
+          B: "man hebt den waffenfreien Arm",
+          C: "es gibt keine Kampfunterbrechung"
+        },
+        correct: ["B"],
+        explanation: "Durch deutliches Heben des waffenfreien Armes bittet man den Kampfrichter um Unterbrechung."
+      },
+      {
+        id: "E10", type: "tableau", points: 8,
+        text: "Trage folgende Gefechte in das Tableau ein! (Hinweis: Sieg = V + Trefferzahl, z. B. V5; Niederlage = D + Trefferzahl, z. B. D2)",
+        matches: [
+          "Max mit Moritz → 5:2",
+          "Kurt mit Peter → 2:2 (nach Zeitablauf Losentscheid für Peter)",
+          "Peter mit Max → 1:5",
+          "Kurt mit Moritz → 5:0",
+          "Moritz mit Peter → 3:5",
+          "Kurt mit Max → 5:3"
+        ],
+        solution: {
+          "1-2": "V5", "1-3": "D3", "1-4": "V5",
+          "2-1": "D2", "2-3": "D0", "2-4": "D3",
+          "3-1": "V5", "3-2": "V5", "3-4": "D2",
+          "4-1": "D1", "4-2": "V5", "4-3": "V2"
+        },
+        solutionText: "Max: V5, D3, V5 | Moritz: D2, D0, D3 | Kurt: V5, V5, D2 | Peter: D1, V5, V2"
+      }
+    ]
+  }
+];
+
+function renderTheory() {
+  const container = document.getElementById('theorie-container');
+  let html = '';
+
+  theoryParts.forEach(part => {
+    html += `<div class="part-header">${part.title}</div>`;
+    part.questions.forEach(q => {
+      html += `<div class="q-card" id="qcard-${q.id}">
+        <div class="q-top">
+          <div><span class="q-num">${q.id.replace('_', ' / ')}</span><span class="q-text">${q.text}</span></div>
+          <span class="q-pts" id="qpts-${q.id}">${q.points} Pkt.</span>
+        </div>`;
+
+      if (q.type === 'mc' || q.type === 'mc_silhouettes') {
+        if (q.type === 'mc_silhouettes') {
+          html += `
+            <div class="silhouettes-row">
+              <div class="sil-box">
+                <svg width="90" height="125" viewBox="0 0 90 125">
+                  <circle cx="45" cy="18" r="12" fill="#334155"/>
+                  <rect x="30" y="32" width="30" height="44" rx="6" fill="#dc2626"/>
+                  <line x1="30" y1="36" x2="12" y2="55" stroke="#334155" stroke-width="7" stroke-linecap="round"/>
+                  <line x1="60" y1="36" x2="78" y2="55" stroke="#334155" stroke-width="7" stroke-linecap="round"/>
+                  <line x1="37" y1="76" x2="28" y2="118" stroke="#334155" stroke-width="8" stroke-linecap="round"/>
+                  <line x1="53" y1="76" x2="62" y2="118" stroke="#334155" stroke-width="8" stroke-linecap="round"/>
+                </svg>
+                <div>1 (nur Rumpf)</div>
+              </div>
+              <div class="sil-box">
+                <svg width="90" height="125" viewBox="0 0 90 125">
+                  <circle cx="45" cy="18" r="12" fill="#dc2626"/>
+                  <rect x="30" y="32" width="30" height="44" rx="6" fill="#dc2626"/>
+                  <line x1="30" y1="36" x2="12" y2="55" stroke="#dc2626" stroke-width="7" stroke-linecap="round"/>
+                  <line x1="60" y1="36" x2="78" y2="55" stroke="#dc2626" stroke-width="7" stroke-linecap="round"/>
+                  <line x1="37" y1="76" x2="28" y2="118" stroke="#334155" stroke-width="8" stroke-linecap="round"/>
+                  <line x1="53" y1="76" x2="62" y2="118" stroke="#334155" stroke-width="8" stroke-linecap="round"/>
+                </svg>
+                <div>2 (ab Gürtellinie aufwärts)</div>
+              </div>
+              <div class="sil-box">
+                <svg width="90" height="125" viewBox="0 0 90 125">
+                  <circle cx="45" cy="18" r="12" fill="#dc2626"/>
+                  <rect x="30" y="32" width="30" height="44" rx="6" fill="#dc2626"/>
+                  <line x1="30" y1="36" x2="12" y2="55" stroke="#dc2626" stroke-width="7" stroke-linecap="round"/>
+                  <line x1="60" y1="36" x2="78" y2="55" stroke="#dc2626" stroke-width="7" stroke-linecap="round"/>
+                  <line x1="37" y1="76" x2="28" y2="118" stroke="#dc2626" stroke-width="8" stroke-linecap="round"/>
+                  <line x1="53" y1="76" x2="62" y2="118" stroke="#dc2626" stroke-width="8" stroke-linecap="round"/>
+                </svg>
+                <div>3 (ganzer Körper)</div>
+              </div>
+            </div>`;
+        }
+        Object.entries(q.options).forEach(([key, val]) => {
+          html += `
+            <label class="opt-label">
+              <input type="checkbox" name="q_${q.id}" value="${key}">
+              <span><strong>${key}:</strong> ${val}</span>
+            </label>`;
+        });
+      } else if (q.type === 'free_list') {
+        html += `<div class="free-inputs">`;
+        for (let i = 0; i < q.count; i++) {
+          html += `<input type="text" id="in_${q.id}_${i}" placeholder="${q.placeholders[i]}">`;
+        }
+        html += `</div>`;
+      } else if (q.type === 'piste') {
+        html += `
+          <div class="piste-wrapper">
+            <svg width="700" height="165" viewBox="0 0 700 165" style="max-width:100%; height:auto; display:block; margin:0 auto;">
+              <!-- Beschriftungen Linien oben -->
+              <text x="35" y="18" font-size="12" font-weight="bold" fill="#b71c1c" text-anchor="middle">Linie 1</text>
+              <text x="235" y="18" font-size="12" font-weight="bold" fill="#b71c1c" text-anchor="middle">Linie 2</text>
+              <text x="315" y="18" font-size="12" font-weight="bold" fill="#b71c1c" text-anchor="middle">Linie 3</text>
+              <text x="395" y="18" font-size="12" font-weight="bold" fill="#b71c1c" text-anchor="middle">Linie 4</text>
+              <text x="595" y="18" font-size="12" font-weight="bold" fill="#b71c1c" text-anchor="middle">Linie 5</text>
+              <!-- Pfeile oben -->
+              <line x1="35" y1="22" x2="35" y2="38" stroke="#b71c1c" stroke-width="2"/>
+              <line x1="235" y1="22" x2="235" y2="38" stroke="#b71c1c" stroke-width="2"/>
+              <line x1="315" y1="22" x2="315" y2="38" stroke="#b71c1c" stroke-width="2"/>
+              <line x1="395" y1="22" x2="395" y2="38" stroke="#b71c1c" stroke-width="2"/>
+              <line x1="595" y1="22" x2="595" y2="38" stroke="#b71c1c" stroke-width="2"/>
+              <!-- Bahn -->
+              <rect x="35" y="40" width="560" height="50" fill="#e2e8f0" stroke="#0f172a" stroke-width="2"/>
+              <line x1="115" y1="40" x2="115" y2="90" stroke="#0f172a" stroke-width="1.5" stroke-dasharray="5,5"/>
+              <line x1="235" y1="40" x2="235" y2="90" stroke="#0f172a" stroke-width="2"/>
+              <line x1="315" y1="40" x2="315" y2="90" stroke="#0f172a" stroke-width="2"/>
+              <line x1="395" y1="40" x2="395" y2="90" stroke="#0f172a" stroke-width="2"/>
+              <line x1="515" y1="40" x2="515" y2="90" stroke="#0f172a" stroke-width="1.5" stroke-dasharray="5,5"/>
+              <!-- Breite rechts -->
+              <line x1="610" y1="40" x2="610" y2="90" stroke="#b71c1c" stroke-width="2"/>
+              <text x="652" y="70" font-size="12" font-weight="bold" fill="#b71c1c" text-anchor="middle">Maß E (Breite)</text>
+              <!-- Abschnitte unten -->
+              <line x1="35" y1="108" x2="235" y2="108" stroke="#b71c1c" stroke-width="2"/>
+              <text x="135" y="124" font-size="12" font-weight="bold" fill="#b71c1c" text-anchor="middle">Maß A</text>
+              <line x1="235" y1="108" x2="315" y2="108" stroke="#b71c1c" stroke-width="2"/>
+              <text x="275" y="124" font-size="12" font-weight="bold" fill="#b71c1c" text-anchor="middle">Maß B</text>
+              <line x1="315" y1="108" x2="395" y2="108" stroke="#b71c1c" stroke-width="2"/>
+              <text x="355" y="124" font-size="12" font-weight="bold" fill="#b71c1c" text-anchor="middle">Maß C</text>
+              <line x1="395" y1="108" x2="595" y2="108" stroke="#b71c1c" stroke-width="2"/>
+              <text x="495" y="124" font-size="12" font-weight="bold" fill="#b71c1c" text-anchor="middle">Maß D</text>
+              <!-- Gesamtlänge -->
+              <line x1="35" y1="142" x2="595" y2="142" stroke="#b71c1c" stroke-width="2"/>
+              <text x="315" y="158" font-size="12" font-weight="bold" fill="#b71c1c" text-anchor="middle">Maß F (Gesamtlänge)</text>
+            </svg>
+          </div>
+          <div class="piste-grid">
+            <div>
+              <strong>A9 – Linien benennen:</strong>
+              <input type="text" id="piste_l1" placeholder="Linie 1 (ganz links)" style="width:100%; margin-top:4px;">
+              <input type="text" id="piste_l2" placeholder="Linie 2 (links innen)" style="width:100%; margin-top:4px;">
+              <input type="text" id="piste_l3" placeholder="Linie 3 (Mitte)" style="width:100%; margin-top:4px;">
+              <input type="text" id="piste_l4" placeholder="Linie 4 (rechts innen)" style="width:100%; margin-top:4px;">
+              <input type="text" id="piste_l5" placeholder="Linie 5 (ganz rechts)" style="width:100%; margin-top:4px;">
+            </div>
+            <div>
+              <strong>A10 – Maße eintragen (in m):</strong>
+              <input type="text" id="piste_ma" placeholder="Maß A (Endlinie–Startlinie)" style="width:100%; margin-top:4px;">
+              <input type="text" id="piste_mb" placeholder="Maß B (Startlinie–Mittellinie)" style="width:100%; margin-top:4px;">
+              <input type="text" id="piste_mc" placeholder="Maß C (Mittellinie–Startlinie)" style="width:100%; margin-top:4px;">
+              <input type="text" id="piste_md" placeholder="Maß D (Startlinie–Endlinie)" style="width:100%; margin-top:4px;">
+              <input type="text" id="piste_me" placeholder="Maß E (Breite der Bahn)" style="width:100%; margin-top:4px;">
+              <input type="text" id="piste_mf" placeholder="Maß F (Gesamtlänge)" style="width:100%; margin-top:4px;">
+            </div>
+          </div>`;
+      } else if (q.type === 'free_parades') {
+        html += `<div class="free-inputs">
+          <input type="text" id="in_C6_0" placeholder="Parade 1 (z. B. Quart)">
+          <input type="text" id="in_C6_1" placeholder="Parade 2">
+          <input type="text" id="in_C6_2" placeholder="Parade 3">
+          <input type="text" id="in_C6_3" placeholder="Parade 4">
+        </div>`;
+      } else if (q.type === 'free_mensur') {
+        html += `<input type="text" id="in_C7" placeholder="Erklärung eintragen..." style="width:100%; margin-top:0.4rem;">`;
+      } else if (q.type === 'tableau') {
+        const fencers = ["Max", "Moritz", "Kurt", "Peter"];
+        html += `
+          <ul style="font-size:0.9rem; margin:0.4rem 0; padding-left:1.25rem;">
+            ${q.matches.map(m => `<li>${m}</li>`).join('')}
+          </ul>
+          <table class="tableau-table">
+            <thead>
+              <tr><th>Name</th><th>Nr</th><th>1</th><th>2</th><th>3</th><th>4</th></tr>
+            </thead>
+            <tbody>
+              ${fencers.map((name, rIdx) => {
+                const r = rIdx + 1;
+                return `<tr>
+                  <td style="text-align:left; font-weight:600;">${name}</td>
+                  <td><strong>${r}</strong></td>
+                  ${[1,2,3,4].map(c => r === c
+                    ? `<td class="tableau-diag"></td>`
+                    : `<td><input type="text" class="tableau-input" id="tab_${r}_${c}" maxlength="3" placeholder="V/D"></td>`
+                  ).join('')}
+                </tr>`;
+              }).join('')}
+            </tbody>
+          </table>`;
+      }
+
+      html += `<div class="feedback-msg" id="fb-${q.id}"></div></div>`;
+    });
+  });
+
+  container.innerHTML = html;
+}
+
+function norm(str) {
+  return (str || '').toLowerCase().trim().replace(/\s+/g, ' ');
+}
+
+function evaluateTheory() {
+  let totalScore = 0;
+  const maxScore = 75;
+
+  theoryParts.forEach(part => {
+    part.questions.forEach(q => {
+      let earned = 0;
+      let status = 'wrong';
+      let msg = '';
+
+      if (q.type === 'mc' || q.type === 'mc_silhouettes') {
+        const checked = Array.from(document.querySelectorAll(`input[name="q_${q.id}"]:checked`)).map(el => el.value);
+        const isExact = checked.length === q.correct.length && q.correct.every(c => checked.includes(c));
+        const hasAnyCorrect = checked.some(c => q.correct.includes(c));
+        const hasWrong = checked.some(c => !q.correct.includes(c));
+
+        if (isExact) {
+          earned = q.points;
+          status = 'correct';
+          msg = `Richtig! (${q.explanation})`;
+        } else if (hasAnyCorrect && !hasWrong && checked.length > 0) {
+          earned = Math.round((q.points * (checked.length / q.correct.length)) * 10) / 10;
+          status = 'partial';
+          msg = `Teilweise richtig – es fehlen noch weitere richtige Antworten (${q.correct.join(', ')}). ${q.explanation}`;
+        } else {
+          earned = 0;
+          status = 'wrong';
+          msg = `Nicht ganz richtig. Richtige Antwort(en): <strong>${q.correct.join(', ')}</strong>. ${q.explanation}`;
+        }
+      } else if (q.type === 'free_list') {
+        const vals = [0,1,2].map(i => norm(document.getElementById(`in_${q.id}_${i}`).value));
+        const matched = new Set();
+        vals.forEach(v => {
+          if (v.includes('degen')) matched.add('degen');
+          if (v.includes('florett')) matched.add('florett');
+          if (v.includes('säbel') || v.includes('saebel')) matched.add('säbel');
+        });
+        earned = matched.size;
+        status = earned === 3 ? 'correct' : (earned > 0 ? 'partial' : 'wrong');
+        msg = `Musterlösung: <strong>${q.solutionText}</strong> (${earned} von 3 erkannt)`;
+      } else if (q.type === 'piste') {
+        let hits = 0;
+        const l1 = norm(document.getElementById('piste_l1').value);
+        const l2 = norm(document.getElementById('piste_l2').value);
+        const l3 = norm(document.getElementById('piste_l3').value);
+        const l4 = norm(document.getElementById('piste_l4').value);
+        const l5 = norm(document.getElementById('piste_l5').value);
+        if (l1.includes('end')) hits++;
+        if (l2.includes('start')) hits++;
+        if (l3.includes('mittel')) hits++;
+        if (l4.includes('start')) hits++;
+        if (l5.includes('end')) hits++;
+
+        const ma = norm(document.getElementById('piste_ma').value);
+        const mb = norm(document.getElementById('piste_mb').value);
+        const mc = norm(document.getElementById('piste_mc').value);
+        const md = norm(document.getElementById('piste_md').value);
+        const me = norm(document.getElementById('piste_me').value);
+        const mf = norm(document.getElementById('piste_mf').value);
+        if (ma.includes('5')) hits++;
+        if (mb.includes('2')) hits++;
+        if (mc.includes('2')) hits++;
+        if (md.includes('5')) hits++;
+        if (me.includes('1,5') || me.includes('1.5') || me.includes('2')) hits++;
+        if (mf.includes('14')) hits++;
+
+        earned = Math.round((hits / 11) * q.points * 10) / 10;
+        status = hits === 11 ? 'correct' : (hits >= 5 ? 'partial' : 'wrong');
+        msg = `Musterlösung: <strong>${q.solutionText}</strong> (${hits} von 11 Angaben richtig)`;
+      } else if (q.type === 'free_parades') {
+        const validParades = ['prim', 'sekond', 'terz', 'quart', 'quint', 'sixt', 'septim', 'oktav'];
+        const found = new Set();
+        [0,1,2,3].forEach(i => {
+          const val = norm(document.getElementById(`in_C6_${i}`).value);
+          validParades.forEach(p => { if (val.includes(p)) found.add(p); });
+        });
+        const count = Math.min(found.size, 4);
+        earned = count;
+        status = count === 4 ? 'correct' : (count > 0 ? 'partial' : 'wrong');
+        msg = `Musterlösung: <strong>${q.solutionText}</strong> (${count} von 4 gültigen Paraden erkannt)`;
+      } else if (q.type === 'free_mensur') {
+        const val = norm(document.getElementById('in_C7').value);
+        if (val.includes('abstand') || val.includes('distanz') || val.includes('entfernung')) {
+          earned = q.points;
+          status = 'correct';
+        } else {
+          earned = 0;
+          status = 'wrong';
+        }
+        msg = `Musterlösung: <strong>${q.solutionText}</strong>`;
+      } else if (q.type === 'tableau') {
+        let correctCells = 0;
+        Object.entries(q.solution).forEach(([cellKey, expectedVal]) => {
+          const inp = document.getElementById(`tab_${cellKey.replace('-', '_')}`);
+          const userVal = (inp.value || '').toUpperCase().trim();
+          if (userVal === expectedVal) {
+            correctCells++;
+            inp.style.backgroundColor = '#dcfce7';
+          } else {
+            inp.style.backgroundColor = '#fee2e2';
+          }
+        });
+        earned = Math.round((correctCells / 12) * q.points * 10) / 10;
+        status = correctCells === 12 ? 'correct' : (correctCells >= 6 ? 'partial' : 'wrong');
+        msg = `Musterlösung: <strong>${q.solutionText}</strong> (${correctCells} von 12 Feldern richtig)`;
+      }
+
+      totalScore += earned;
+      const card = document.getElementById(`qcard-${q.id}`);
+      card.classList.remove('correct', 'partial', 'wrong');
+      card.classList.add(status);
+
+      const ptsBadge = document.getElementById(`qpts-${q.id}`);
+      ptsBadge.textContent = `${earned} / ${q.points} Pkt.`;
+
+      const fb = document.getElementById(`fb-${q.id}`);
+      fb.className = `feedback-msg show ${status === 'correct' ? 'fb-ok' : (status === 'partial' ? 'fb-warn' : 'fb-err')}`;
+      fb.innerHTML = msg;
+    });
+  });
+
+  totalScore = Math.round(totalScore * 10) / 10;
+  const reqScore = parseInt(document.getElementById('age-group').value, 10);
+  const passed = totalScore >= reqScore;
+
+  document.getElementById('live-score-badge').textContent = `Ergebnis: ${totalScore} / ${maxScore} Punkte`;
+
+  const banner = document.getElementById('theory-result');
+  banner.className = `result-banner show ${passed ? 'result-pass' : 'result-fail'}`;
+  banner.innerHTML = `
+    <h3 style="margin:0 0 0.4rem 0;">${passed ? 'Herzlichen Glückwunsch – Bestanden!' : 'Noch nicht ganz bestanden'}</h3>
+    <p style="margin:0;">
+      Du hast <strong>${totalScore} von ${maxScore} Punkten</strong> erreicht
+      (benötigt für gewählte Altersklasse: <strong>${reqScore} Punkte</strong>).
+      Scrolle nach oben, um die einzelnen Auswertungen und Musterlösungen pro Frage einzusehen.
+    </p>
+  `;
+  banner.scrollIntoView({ behavior: 'smooth' });
+}
+
+function resetTheory() {
+  renderTheory();
+  document.getElementById('live-score-badge').textContent = 'Maximal 75 Punkte';
+  const banner = document.getElementById('theory-result');
+  banner.className = 'result-banner';
+  banner.innerHTML = '';
+}
+
+function switchTab(tabId, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  btn.classList.add('active');
+}
+
+// Initialisierung
+renderPraxis();
+renderTheory();
+</script>
+</body>
+</html>
