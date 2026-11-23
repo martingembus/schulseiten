@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Silbenmaschine – Grundschule Diekholzen</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for Child-Friendly Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;900&family=Quicksand:wght@600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            green: '#4ade80',
+                            darkgreen: '#16a34a',
+                            blue: '#38bdf8',
+                            darkblue: '#0284c7',
+                            yellow: '#facc15',
+                            orange: '#fb923c',
+                            red: '#f87171',
+                            purple: '#c084fc',
+                            cream: '#fefce8'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Nunito', 'Quicksand', 'Comic Sans MS', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Nunito', 'Quicksand', 'Comic Sans MS', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* 3D Slot Machine Reel Styling */
+        .reel-window {
+            perspective: 1000px;
+            overflow: hidden;
+            box-shadow: inset 0 8px 16px rgba(0,0,0,0.4), inset 0 -8px 16px rgba(0,0,0,0.4);
+        }
+
+        .reel-strip {
+            transition: transform 0.1s linear;
+            will-change: transform;
+        }
+
+        .reel-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 120px;
+            font-size: 3.5rem;
+            font-weight: 900;
+            letter-spacing: 0.05em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        @media (max-width: 640px) {
+            .reel-item {
+                height: 90px;
+                font-size: 2.2rem;
+            }
+        }
+
+        /* Lever animations */
+        .lever-arm {
+            transform-origin: bottom center;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .lever-pulled .lever-arm {
+            transform: rotateX(60deg) scaleY(0.7);
+        }
+
+        .lever-ball {
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .lever-pulled .lever-ball {
+            transform: translateY(120px) scale(0.9);
+        }
+
+        /* Animated pulse for spinning state */
+        @keyframes pulse-subtle {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.9; transform: scale(0.98); }
+        }
+        .spinning {
+            animation: pulse-subtle 0.15s infinite ease-in-out;
+            filter: blur(2px);
+        }
+
+        /* Syllable Arch (Silbenbogen) Animation */
+        .syllable-arch-path {
+            stroke-dasharray: 400;
+            stroke-dashoffset: 400;
+            animation: drawArch 0.5s ease-out forwards;
+        }
+        @keyframes drawArch {
+            to { stroke-dashoffset: 0; }
+        }
+
+        /* Custom scrollbars */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-b from-sky-100 via-amber-50 to-emerald-100 min-h-screen text-slate-800 flex flex-col justify-between p-2 sm:p-4">
+
+    <!-- TOP HEADER / BANNER -->
+    <header class="max-w-5xl mx-auto w-full bg-white rounded-3xl shadow-lg border-4 border-amber-300 p-3 sm:p-4 mb-3 relative overflow-hidden">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+            
+            <!-- School Logo & Header Title -->
+            <div class="flex items-center gap-3 sm:gap-4">
+                <div class="relative w-16 h-16 sm:w-20 sm:h-20 shrink-0">
+                    <svg viewBox="0 0 100 100" class="w-full h-full drop-shadow-md">
+                        <!-- Sun & Hills Background matching Grundschule Diekholzen theme -->
+                        <circle cx="50" cy="50" r="46" fill="#FEF08A" />
+                        <path d="M 15,65 Q 50,35 85,65 L 85,90 L 15,90 Z" fill="#4ADE80" />
+                        <path d="M 5,75 Q 45,50 95,75 L 95,95 L 5,95 Z" fill="#22C55E" opacity="0.8"/>
+                        <!-- Sun rays -->
+                        <circle cx="50" cy="30" r="15" fill="#FACC15" />
+                        <!-- Toy Alphabet Blocks (A B C) -->
+                        <rect x="22" y="42" width="22" height="22" rx="4" fill="#F87171" transform="rotate(-8 33 53)"/>
+                        <text x="33" y="58" font-size="15" font-weight="900" fill="white" text-anchor="middle" transform="rotate(-8 33 53)">A</text>
+                        
+                        <rect x="52" y="40" width="22" height="22" rx="4" fill="#38BDF8" transform="rotate(6 63 51)"/>
+                        <text x="63" y="56" font-size="15" font-weight="900" fill="white" text-anchor="middle" transform="rotate(6 63 51)">B</text>
+
+                        <rect x="38" y="24" width="20" height="20" rx="4" fill="#FB923C" transform="rotate(2 48 34)"/>
+                        <text x="48" y="39" font-size="13" font-weight="900" fill="white" text-anchor="middle" transform="rotate(2 48 34)">C</text>
+                    </svg>
+                </div>
+                <div>
+                    <div class="inline-block bg-emerald-100 text-emerald-800 text-xs font-black px-3 py-0.5 rounded-full uppercase tracking-wider mb-1">
+                        Grundschule Diekholzen
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-tight leading-none">
+                        3-Silben-Maschine <span class="text-amber-500">🎰</span>
+                    </h1>
+                    <p class="text-xs sm:text-sm text-slate-500 font-bold mt-1">
+                        Lesenlernen mit dreisilbigen Wörtern (Klasse 1 & 2)
+                    </p>
+                </div>
+            </div>
+
+            <!-- Header Action Controls -->
+            <div class="flex items-center gap-2 self-end sm:self-center">
+                <!-- Sound Toggle -->
+                <button id="soundToggleBtn" onclick="toggleSound()" class="p-2.5 bg-slate-100 hover:bg-amber-100 text-slate-700 rounded-2xl border-2 border-slate-200 transition font-bold flex items-center gap-2 text-xs sm:text-sm">
+                    <span id="soundIcon" class="text-lg">🔊</span>
+                    <span id="soundLabel" class="hidden sm:inline">Ton An</span>
+                </button>
+
+                <!-- Open Settings Drawer -->
+                <button onclick="toggleSettingsDrawer(true)" class="p-2.5 bg-amber-400 hover:bg-amber-500 text-amber-950 rounded-2xl shadow-md border-2 border-amber-300 transition font-extrabold flex items-center gap-2 text-xs sm:text-sm">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                    <span>Einstellungen</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN INTERACTIVE AREA -->
+    <main class="max-w-5xl mx-auto w-full flex-grow flex flex-col justify-center items-center my-1">
+
+        <!-- SLOT MACHINE MAIN CONTAINER -->
+        <div class="w-full relative bg-gradient-to-b from-amber-400 via-amber-500 to-amber-600 p-3 sm:p-6 rounded-3xl shadow-2xl border-4 border-amber-300">
+            
+            <!-- Marquee Info Header -->
+            <div class="flex flex-wrap items-center justify-between gap-2 bg-amber-950 text-amber-200 px-4 py-2 rounded-2xl mb-3 border-2 border-amber-400 shadow-inner">
+                <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span class="text-xs sm:text-sm font-extrabold tracking-wide uppercase" id="syllableLengthBadge">
+                        3 Silben &bull; Gemischte Länge (2-3 Buchst.)
+                    </span>
+                </div>
+                <div class="flex items-center gap-2 text-xs font-bold">
+                    <span id="caseModeDisplay" class="bg-amber-900/80 px-2 py-0.5 rounded border border-amber-700">
+                        Groß-/Kleinschreibung (Ma-li-mo)
+                    </span>
+                </div>
+            </div>
+
+            <!-- SLOT REELS & LEVER LAYOUT -->
+            <div class="flex items-center justify-center gap-2 sm:gap-5 relative">
+                
+                <!-- 3 SLOT REELS CONTAINER -->
+                <div class="flex-1 bg-slate-900 p-3 sm:p-4 rounded-3xl shadow-2xl border-4 border-amber-200 relative">
+                    
+                    <!-- Top Machine Lights -->
+                    <div class="flex justify-around mb-2 px-6">
+                        <div class="w-3 h-3 rounded-full bg-rose-500 shadow-[0_0_8px_#f43f5e] border border-white"></div>
+                        <div class="w-3 h-3 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399] border border-white"></div>
+                        <div class="w-3 h-3 rounded-full bg-sky-400 shadow-[0_0_8px_#38bdf8] border border-white"></div>
+                        <div class="w-3 h-3 rounded-full bg-amber-400 shadow-[0_0_8px_#fbbf24] border border-white"></div>
+                    </div>
+
+                    <!-- 3 REELS DISPLAY GRID -->
+                    <div id="reelsContainer" class="grid grid-cols-3 gap-2 sm:gap-4 mb-3">
+                        <!-- 3 Syllable Reels populated via JS -->
+                    </div>
+
+                    <!-- REEL LOCK & RESPIN CONTROLS -->
+                    <div id="reelControlsContainer" class="grid grid-cols-3 gap-2 sm:gap-4">
+                        <!-- Lock & spin buttons per syllable -->
+                    </div>
+                </div>
+
+                <!-- PHYSICAL SLOT MACHINE LEVER -->
+                <div class="hidden sm:flex flex-col items-center justify-center relative cursor-pointer group select-none" id="leverContainer" onclick="pullLever()" title="Hebel ziehen zum Drehen!">
+                    <div class="w-8 h-44 bg-gradient-to-r from-slate-400 via-slate-200 to-slate-500 rounded-lg shadow-md relative border-2 border-slate-600 lever-arm">
+                        <!-- Red Knob -->
+                        <div class="w-14 h-14 bg-gradient-to-br from-rose-400 via-red-600 to-rose-800 rounded-full absolute -top-8 -left-3 shadow-lg border-2 border-white flex items-center justify-center lever-ball group-hover:scale-110 transition-transform">
+                            <div class="w-4 h-4 bg-white/40 rounded-full absolute top-2 left-2"></div>
+                        </div>
+                    </div>
+                    <!-- Lever Base -->
+                    <div class="w-14 h-16 bg-slate-800 rounded-xl border-2 border-amber-300 shadow-lg mt-[-10px] flex items-center justify-center">
+                        <div class="w-4 h-8 bg-slate-900 rounded border border-slate-700"></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- SPIN BUTTON & HINT -->
+            <div class="mt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
+                <button id="spinBtn" onclick="spinAllReels()" class="w-full sm:w-auto px-10 py-3.5 bg-gradient-to-r from-emerald-400 via-emerald-500 to-green-600 hover:from-emerald-300 hover:to-green-500 text-white font-black text-2xl sm:text-3xl rounded-3xl shadow-xl border-4 border-emerald-200 active:scale-95 transition transform flex items-center justify-center gap-3">
+                    <span>🎰</span>
+                    <span>NEUES WORT DREHEN!</span>
+                </button>
+                <div class="text-xs text-amber-950 font-bold bg-amber-300/80 px-3 py-1.5 rounded-full border border-amber-200">
+                    Tipp: Drücke die <kbd class="bg-white px-2 py-0.5 rounded shadow text-slate-800 border">Leertaste</kbd>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 3-SYLLABLE DISPLAY & READING AIDS CARD -->
+        <div class="w-full max-w-4xl mt-4 bg-white rounded-3xl shadow-xl border-4 border-sky-300 p-4 sm:p-5 text-center relative overflow-hidden">
+            
+            <!-- Controls & Options for Reading Aids -->
+            <div class="flex flex-wrap items-center justify-between text-slate-500 font-bold text-xs uppercase tracking-wider mb-2 border-b pb-2 gap-2">
+                <span class="text-slate-700 font-extrabold">📖 Lese-Hilfen</span>
+                <div class="flex flex-wrap items-center gap-4 text-slate-700">
+                    <label class="inline-flex items-center gap-1.5 cursor-pointer">
+                        <input type="checkbox" id="vowelHighlightToggle" onchange="renderSyllableCard()" checked class="w-4 h-4 rounded text-emerald-500 focus:ring-0">
+                        <span class="text-xs font-bold">👑 Königsbuchstaben</span>
+                    </label>
+                    <label class="inline-flex items-center gap-1.5 cursor-pointer">
+                        <input type="checkbox" id="dotsToggle" onchange="renderSyllableCard()" checked class="w-4 h-4 rounded text-amber-500 focus:ring-0">
+                        <span class="text-xs font-bold">· Trennpunkte</span>
+                    </label>
+                    <label class="inline-flex items-center gap-1.5 cursor-pointer">
+                        <input type="checkbox" id="archToggle" onchange="renderSyllableCard()" checked class="w-4 h-4 rounded text-sky-500 focus:ring-0">
+                        <span class="text-xs font-bold">🔴🔵🔴 Silbenbögen</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Assembled Word Display Container -->
+            <div class="relative py-2 flex flex-col items-center justify-center min-h-[140px]">
+                
+                <!-- Syllables HTML Text Display -->
+                <div id="syllableTextDisplay" class="text-5xl sm:text-7xl font-black tracking-wide text-slate-800 flex items-center justify-center gap-2 sm:gap-3">
+                    <!-- Rendered dynamically -->
+                </div>
+
+                <!-- 3 SVG Syllable Arches (Silbenbögen) -->
+                <div id="syllableArchContainer" class="w-full max-w-lg h-10 mt-1">
+                    <!-- SVG rendered dynamically -->
+                </div>
+            </div>
+
+            <!-- Audio & Reward Actions -->
+            <div class="flex flex-wrap items-center justify-center gap-3 mt-1">
+                <!-- Speak Whole Word -->
+                <button onclick="speakWholeWord()" class="px-5 py-2.5 bg-sky-500 hover:bg-sky-600 text-white font-extrabold rounded-2xl shadow-md border-2 border-sky-300 transition flex items-center gap-2 text-sm sm:text-base active:scale-95">
+                    <span class="text-xl">🔊</span>
+                    <span>Vorlesen</span>
+                </button>
+
+                <!-- Speak Syllable by Syllable (Slow Turtle Mode) -->
+                <button onclick="speakSyllableBySyllable()" class="px-5 py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white font-extrabold rounded-2xl shadow-md border-2 border-indigo-300 transition flex items-center gap-2 text-sm sm:text-base active:scale-95">
+                    <span class="text-xl">🐢</span>
+                    <span>Silbe für Silbe</span>
+                </button>
+
+                <!-- Reward Star Button -->
+                <button id="readStarBtn" onclick="markAsRead()" class="px-6 py-2.5 bg-amber-400 hover:bg-amber-500 text-amber-950 font-black rounded-2xl shadow-md border-2 border-amber-300 transition flex items-center gap-2 text-sm sm:text-base active:scale-95">
+                    <span class="text-xl">⭐</span>
+                    <span>Gelesen!</span>
+                </button>
+            </div>
+
+        </div>
+
+        <!-- SCHATZKISTE / COLLECTED STARS TROPHY BAR -->
+        <div class="w-full max-w-4xl mt-3 bg-white/90 rounded-3xl p-3 sm:p-4 border-2 border-emerald-300 shadow-sm">
+            <div class="flex items-center justify-between mb-2">
+                <span class="font-extrabold text-xs sm:text-sm text-emerald-800 flex items-center gap-1.5">
+                    <span>👑 Meine Schatzkiste (Gelesene Wörter)</span>
+                    <span id="starCounter" class="bg-amber-400 text-amber-950 px-2 py-0.5 rounded-full text-xs font-black">0</span>
+                </span>
+                <button onclick="clearStarHistory()" class="text-xs font-bold text-slate-400 hover:text-rose-500 underline">
+                    Leeren
+                </button>
+            </div>
+            <div id="starHistoryList" class="flex flex-wrap gap-2 min-h-[36px] items-center">
+                <p id="emptyHistoryMsg" class="text-xs text-slate-400 italic">Lies ein Wort und klicke auf "Gelesen!", um Sterne zu sammeln!</p>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="max-w-5xl mx-auto w-full text-center text-xs text-slate-500 font-bold py-2 mt-2">
+        Grundschule Diekholzen &bull; Silbenmaschine für dreisilbige Wörter
+    </footer>
+
+    <!-- SETTINGS DRAWER / MODAL -->
+    <div id="settingsDrawer" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex justify-end transition-opacity">
+        <div class="w-full max-w-lg bg-white h-full shadow-2xl flex flex-col p-5 overflow-y-auto border-l-4 border-amber-400">
+            
+            <div class="flex items-center justify-between border-b pb-3 mb-4">
+                <h2 class="text-xl font-extrabold text-slate-800 flex items-center gap-2">
+                    <span>⚙️</span>
+                    <span>Buchstaben & Einstellungen</span>
+                </h2>
+                <button onclick="toggleSettingsDrawer(false)" class="p-2 bg-slate-100 hover:bg-slate-200 rounded-full text-slate-600 font-bold">
+                    ✕
+                </button>
+            </div>
+
+            <!-- SYLLABLE LENGTH MODE -->
+            <div class="mb-5">
+                <label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">
+                    Silben-Länge (Buchstaben pro Silbe)
+                </label>
+                <div class="grid grid-cols-3 gap-2">
+                    <button id="lengthModeMixed" onclick="setLengthMode('mixed')" class="p-2.5 border-2 rounded-xl text-xs font-bold text-center">
+                        <div class="font-black text-sm">Gemischt</div>
+                        <div class="text-[10px] opacity-75">2 oder 3 Buchst.</div>
+                    </button>
+                    <button id="lengthMode2" onclick="setLengthMode('2only')" class="p-2.5 border-2 rounded-xl text-xs font-bold text-center">
+                        <div class="font-black text-sm">Nur 2</div>
+                        <div class="text-[10px] opacity-75">z.B. MA-LI-MO</div>
+                    </button>
+                    <button id="lengthMode3" onclick="setLengthMode('3only')" class="p-2.5 border-2 rounded-xl text-xs font-bold text-center">
+                        <div class="font-black text-sm">Nur 3</div>
+                        <div class="text-[10px] opacity-75">z.B. MAN-LOS-TIS</div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- PRESETS (LESE-STUFEN) -->
+            <div class="mb-5">
+                <label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">
+                    Lese-Stufen (Lautauswahl)
+                </label>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="applyPreset(1)" class="p-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-300 rounded-xl text-xs font-extrabold text-left">
+                        🌱 Stufe 1: Starter (M, L, S, R, T, A, O, I, E)
+                    </button>
+                    <button onclick="applyPreset(2)" class="p-2 bg-sky-50 hover:bg-sky-100 text-sky-900 border border-sky-300 rounded-xl text-xs font-extrabold text-left">
+                        🌿 Stufe 2: Basis (+ N, P, K, D, U)
+                    </button>
+                    <button onclick="applyPreset(3)" class="p-2 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 rounded-xl text-xs font-extrabold text-left">
+                        🌳 Stufe 3: (+ B, F, G, H, W, Z, AU, EI)
+                    </button>
+                    <button onclick="applyPreset(4)" class="p-2 bg-purple-50 hover:bg-purple-100 text-purple-900 border border-purple-300 rounded-xl text-xs font-extrabold text-left">
+                        ⭐ Stufe 4: Alle Laute & Umlaute
+                    </button>
+                </div>
+            </div>
+
+            <!-- CASE MODE SELECTION -->
+            <div class="mb-5">
+                <label class="block text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-2">
+                    Schreibweise
+                </label>
+                <div class="grid grid-cols-3 gap-2">
+                    <button id="caseTitle" onclick="setCaseMode('title')" class="p-2 border-2 rounded-xl text-xs font-bold text-center">
+                        Standard (Ma-li-mo)
+                    </button>
+                    <button id="caseUpper" onclick="setCaseMode('upper')" class="p-2 border-2 rounded-xl text-xs font-bold text-center">
+                        GROSS (MA-LI-MO)
+                    </button>
+                    <button id="caseLower" onclick="setCaseMode('lower')" class="p-2 border-2 rounded-xl text-xs font-bold text-center">
+                        klein (ma-li-mo)
+                    </button>
+                </div>
+            </div>
+
+            <!-- VOWELS CHECKBOXES -->
+            <div class="mb-5">
+                <div class="flex items-center justify-between mb-1.5">
+                    <label class="text-xs font-extrabold text-slate-500 uppercase tracking-wider">
+                        Königsbuchstaben / Vokale
+                    </label>
+                </div>
+                <div id="vowelsGrid" class="grid grid-cols-4 sm:grid-cols-6 gap-2">
+                    <!-- Dynamically rendered -->
+                </div>
+            </div>
+
+            <!-- CONSONANTS CHECKBOXES -->
+            <div class="mb-5">
+                <div class="flex items-center justify-between mb-1.5">
+                    <label class="text-xs font-extrabold text-slate-500 uppercase tracking-wider">
+                        Konsonanten & Lautverbindungen
+                    </label>
+                </div>
+                <div id="consonantsGrid" class="grid grid-cols-4 sm:grid-cols-6 gap-2">
+                    <!-- Dynamically rendered -->
+                </div>
+            </div>
+
+            <div class="mt-auto border-t pt-4">
+                <button onclick="toggleSettingsDrawer(false)" class="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold rounded-2xl shadow-md text-base">
+                    Übernehmen & Schließen
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- JAVASCRIPT APPLICATION LOGIC -->
+    <script>
+        /* ==========================================================================
+           CONFIG & STATE MANAGEMENT
+           ========================================================================== */
+
+        const ALL_VOWELS = ['A', 'E', 'I', 'O', 'U', 'Ä', 'Ö', 'Ü', 'AU', 'EI', 'EU'];
+        const ALL_CONSONANTS = ['M', 'L', 'S', 'R', 'T', 'N', 'P', 'K', 'D', 'B', 'F', 'G', 'H', 'W', 'Z', 'SCH', 'CH', 'J', 'V', 'QU'];
+
+        let state = {
+            vowels: ['A', 'E', 'I', 'O', 'U'],
+            consonants: ['M', 'L', 'S', 'R', 'T', 'N', 'P', 'K', 'D'],
+            lengthMode: 'mixed', // 'mixed', '2only', '3only'
+            caseMode: 'title', // 'title' (Ma-li-mo), 'upper' (MA-LI-MO), 'lower' (ma-li-mo)
+            soundEnabled: true,
+            isSpinning: false,
+            currentSyllables: ['', '', ''],
+            lockedReels: [false, false, false],
+            readHistory: []
+        };
+
+        /* ==========================================================================
+           WEB AUDIO SYNTHESIZER
+           ========================================================================== */
+        let audioCtx = null;
+
+        function getAudioContext() {
+            if (!audioCtx) {
+                const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
+                if (AudioCtxClass) {
+                    audioCtx = new AudioCtxClass();
+                }
+            }
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        function playClickSound() {
+            if (!state.soundEnabled) return;
+            try {
+                const ctx = getAudioContext();
+                if (!ctx) return;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(160 + Math.random() * 60, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(40, ctx.currentTime + 0.04);
+
+                gain.gain.setValueAtTime(0.12, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.04);
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc.start();
+                osc.stop(ctx.currentTime + 0.04);
+            } catch (e) {}
+        }
+
+        function playStopSound() {
+            if (!state.soundEnabled) return;
+            try {
+                const ctx = getAudioContext();
+                if (!ctx) return;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(280, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(90, ctx.currentTime + 0.07);
+
+                gain.gain.setValueAtTime(0.2, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.07);
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc.start();
+                osc.stop(ctx.currentTime + 0.07);
+            } catch (e) {}
+        }
+
+        function playStarWinSound() {
+            if (!state.soundEnabled) return;
+            try {
+                const ctx = getAudioContext();
+                if (!ctx) return;
+
+                const notes = [523.25, 659.25, 783.99, 1046.50];
+                notes.forEach((freq, i) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.06);
+
+                    gain.gain.setValueAtTime(0.18, ctx.currentTime + i * 0.06);
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.06 + 0.18);
+
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+
+                    osc.start(ctx.currentTime + i * 0.06);
+                    osc.stop(ctx.currentTime + i * 0.06 + 0.18);
+                });
+            } catch (e) {}
+        }
+
+        function toggleSound() {
+            state.soundEnabled = !state.soundEnabled;
+            const icon = document.getElementById('soundIcon');
+            const label = document.getElementById('soundLabel');
+            if (state.soundEnabled) {
+                icon.textContent = '🔊';
+                label.textContent = 'Ton An';
+                playClickSound();
+            } else {
+                icon.textContent = '🔇';
+                label.textContent = 'Stumm';
+            }
+        }
+
+        /* ==========================================================================
+           READABLE SYLLABLE GENERATION ALGORITHM
+           ========================================================================== */
+
+        function getRandomItem(array) {
+            if (!array || array.length === 0) return '';
+            return array[Math.floor(Math.random() * array.length)];
+        }
+
+        function generateSingleSyllable(reelIndex) {
+            let activeVowels = state.vowels.length > 0 ? state.vowels : ['A'];
+            let activeConsonants = state.consonants.length > 0 ? state.consonants : ['M'];
+
+            let targetLen = 2;
+            if (state.lengthMode === 'mixed') {
+                targetLen = Math.random() < 0.5 ? 2 : 3;
+            } else if (state.lengthMode === '3only') {
+                targetLen = 3;
+            } else {
+                targetLen = 2;
+            }
+
+            let syllable = '';
+
+            if (targetLen === 2) {
+                // 2-Letter patterns: CV (85%) or VC (15%)
+                if (Math.random() < 0.85) {
+                    let c = getRandomItem(activeConsonants);
+                    let v = getRandomItem(activeVowels);
+                    if (c === 'QU' && v !== 'U') v = 'U'; // QU rule
+                    syllable = c + v;
+                } else {
+                    let v = getRandomItem(activeVowels);
+                    let c = getRandomItem(activeConsonants);
+                    if (c === 'QU') c = 'M';
+                    syllable = v + c;
+                }
+            } else {
+                // 3-Letter patterns: CVC (80%) or CCV (20%)
+                if (Math.random() < 0.80) {
+                    let c1 = getRandomItem(activeConsonants);
+                    let v = getRandomItem(activeVowels);
+                    let c2 = getRandomItem(activeConsonants);
+
+                    // Readability cleanup
+                    if (c1 === 'QU') v = 'U';
+                    if (c2 === 'QU') c2 = 'N';
+                    if (c1 === c2 && c1.length === 1) c2 = 'N'; // Prevent MM, LL in single syllable
+
+                    syllable = c1 + v + c2;
+                } else {
+                    // CCV pattern (e.g. SCHU, STA, BLO) if multi-consonants exist
+                    let c1 = getRandomItem(activeConsonants);
+                    let v = getRandomItem(activeVowels);
+
+                    if (c1 === 'SCH' || c1 === 'CH') {
+                        syllable = c1 + v; // SCH is already 3 chars
+                    } else {
+                        let c2 = 'R';
+                        if (['B','D','G','P','T','F','K'].includes(c1)) c2 = 'R';
+                        else if (['S'].includes(c1)) c2 = 'T';
+                        else c2 = 'L';
+                        syllable = c1 + c2 + v;
+                    }
+                }
+            }
+
+            return syllable;
+        }
+
+        function formatSyllableCase(syllable, reelIndex) {
+            if (!syllable) return '';
+            if (state.caseMode === 'upper') {
+                return syllable.toUpperCase();
+            } else if (state.caseMode === 'lower') {
+                return syllable.toLowerCase();
+            } else if (state.caseMode === 'title') {
+                if (reelIndex === 0) {
+                    // Capitalize first letter of whole word
+                    return syllable.charAt(0).toUpperCase() + syllable.slice(1).toLowerCase();
+                } else {
+                    return syllable.toLowerCase();
+                }
+            }
+            return syllable;
+        }
+
+        /* ==========================================================================
+           SLOT MACHINE UI RENDERING & ANIMATION
+           ========================================================================== */
+
+        function setupReelsUI() {
+            const container = document.getElementById('reelsContainer');
+            const controlsContainer = document.getElementById('reelControlsContainer');
+
+            container.innerHTML = '';
+            controlsContainer.innerHTML = '';
+
+            for (let i = 0; i < 3; i++) {
+                // Ensure initial syllable
+                if (!state.currentSyllables[i]) {
+                    state.currentSyllables[i] = generateSingleSyllable(i);
+                }
+
+                const currentVal = state.currentSyllables[i];
+                const formattedVal = formatSyllableCase(currentVal, i);
+
+                // REEL WINDOW
+                const reelWin = document.createElement('div');
+                reelWin.className = 'reel-window bg-slate-950 border-2 border-amber-300/40 rounded-2xl relative h-[120px] overflow-hidden flex flex-col justify-center items-center shadow-inner cursor-pointer group';
+                reelWin.id = `reelWindow_${i}`;
+                reelWin.onclick = () => speakSingleReelSyllable(i);
+                reelWin.title = "Klicke zum Vorlesen dieser Silbe!";
+
+                // Header Badge for Syllable Number
+                const badge = document.createElement('div');
+                badge.className = 'absolute top-1 left-1/2 -translate-x-1/2 text-[10px] font-black uppercase px-2 py-0.5 rounded-full z-10 pointer-events-none shadow bg-sky-500 text-white';
+                badge.textContent = `${i + 1}. Silbe`;
+                reelWin.appendChild(badge);
+
+                // Reel Strip
+                const reelStrip = document.createElement('div');
+                reelStrip.className = 'reel-strip w-full text-center text-white';
+                reelStrip.id = `reelStrip_${i}`;
+
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'reel-item text-amber-300 font-black';
+                itemDiv.textContent = formattedVal;
+                reelStrip.appendChild(itemDiv);
+
+                reelWin.appendChild(reelStrip);
+                container.appendChild(reelWin);
+
+                // LOCK & RESPIN BUTTONS
+                const isLocked = state.lockedReels[i];
+                const ctrlDiv = document.createElement('div');
+                ctrlDiv.className = 'flex flex-col gap-1.5 items-center';
+                ctrlDiv.innerHTML = `
+                    <button onclick="toggleLockReel(${i})" id="lockBtn_${i}" class="w-full py-2 px-1 rounded-xl text-xs font-black border-2 transition flex items-center justify-center gap-1 ${
+                        isLocked 
+                        ? 'bg-amber-400 text-amber-950 border-amber-300 shadow-md scale-95' 
+                        : 'bg-slate-800 text-slate-300 border-slate-700 hover:border-amber-400'
+                    }">
+                        <span>${isLocked ? '🔒 Fest' : '🔓 Frei'}</span>
+                    </button>
+                    <button onclick="spinSingleReel(${i})" class="w-full py-1.5 px-1 bg-slate-800 hover:bg-slate-700 text-sky-300 rounded-xl text-xs font-bold border border-slate-700 transition">
+                        🔄 Einzeln
+                    </button>
+                `;
+                controlsContainer.appendChild(ctrlDiv);
+            }
+
+            renderSyllableCard();
+        }
+
+        function toggleLockReel(index) {
+            if (state.isSpinning) return;
+            state.lockedReels[index] = !state.lockedReels[index];
+            playClickSound();
+            setupReelsUI();
+        }
+
+        function pullLever() {
+            if (state.isSpinning) return;
+            const container = document.getElementById('leverContainer');
+            container.classList.add('lever-pulled');
+            playClickSound();
+            spinAllReels();
+            setTimeout(() => {
+                container.classList.remove('lever-pulled');
+            }, 500);
+        }
+
+        function spinAllReels() {
+            if (state.isSpinning) return;
+            state.isSpinning = true;
+
+            let completed = 0;
+
+            for (let i = 0; i < 3; i++) {
+                if (state.lockedReels[i]) {
+                    completed++;
+                    if (completed === 3) {
+                        state.isSpinning = false;
+                        renderSyllableCard();
+                    }
+                    continue;
+                }
+
+                // Staggered reel spinning animation (Reel 1 stops first, Reel 3 stops last)
+                animateReelSpin(i, 500 + i * 250, () => {
+                    completed++;
+                    if (completed === 3) {
+                        state.isSpinning = false;
+                        renderSyllableCard();
+                    }
+                });
+            }
+        }
+
+        function spinSingleReel(index) {
+            if (state.isSpinning) return;
+            if (state.lockedReels[index]) state.lockedReels[index] = false;
+
+            state.isSpinning = true;
+            animateReelSpin(index, 500, () => {
+                state.isSpinning = false;
+                setupReelsUI();
+            });
+        }
+
+        function animateReelSpin(reelIndex, duration, onComplete) {
+            const strip = document.getElementById(`reelStrip_${reelIndex}`);
+            if (!strip) return;
+
+            strip.classList.add('spinning');
+            
+            const finalSyllable = generateSingleSyllable(reelIndex);
+            state.currentSyllables[reelIndex] = finalSyllable;
+
+            let intervalId = setInterval(() => {
+                const tempSyllable = generateSingleSyllable(reelIndex);
+                strip.innerHTML = `<div class="reel-item text-amber-200 font-black">${formatSyllableCase(tempSyllable, reelIndex)}</div>`;
+                playClickSound();
+            }, 60);
+
+            setTimeout(() => {
+                clearInterval(intervalId);
+                strip.classList.remove('spinning');
+                strip.innerHTML = `<div class="reel-item text-amber-300 font-black transform scale-110 transition">${formatSyllableCase(finalSyllable, reelIndex)}</div>`;
+                playStopSound();
+                if (onComplete) onComplete();
+            }, duration);
+        }
+
+        /* ==========================================================================
+           ASSEMBLED WORD & SYLLABLE ARCHES RENDERING
+           ========================================================================== */
+
+        function isVowelChar(char) {
+            const upper = char.toUpperCase();
+            return ['A','E','I','O','U','Ä','Ö','Ü'].includes(upper);
+        }
+
+        function renderSyllableCard() {
+            const display = document.getElementById('syllableTextDisplay');
+            const archContainer = document.getElementById('syllableArchContainer');
+            
+            const highlightVowels = document.getElementById('vowelHighlightToggle').checked;
+            const showDots = document.getElementById('dotsToggle').checked;
+            const showArches = document.getElementById('archToggle').checked;
+
+            let html = '';
+
+            for (let i = 0; i < 3; i++) {
+                const rawSyllable = state.currentSyllables[i] || '';
+                const formatted = formatSyllableCase(rawSyllable, i);
+
+                // Highlight vowels inside syllable if enabled
+                let sylHtml = '';
+                for (let ch of formatted) {
+                    if (highlightVowels && isVowelChar(ch)) {
+                        sylHtml += `
+                            <span class="inline-flex flex-col items-center relative text-rose-500 font-black">
+                                <span class="text-[10px] sm:text-xs text-amber-500 absolute -top-3 font-bold">👑</span>
+                                <span>${ch}</span>
+                            </span>
+                        `;
+                    } else {
+                        sylHtml += `<span>${ch}</span>`;
+                    }
+                }
+
+                html += `<div class="inline-flex items-center gap-0.5">${sylHtml}</div>`;
+
+                if (showDots && i < 2) {
+                    html += `<span class="text-amber-400 font-black mx-1 text-4xl sm:text-5xl select-none">·</span>`;
+                }
+            }
+
+            display.innerHTML = html;
+
+            // Render 3 SVG Syllable Arches (Silbenbögen)
+            if (showArches) {
+                archContainer.innerHTML = `
+                    <svg viewBox="0 0 300 40" class="w-full h-full overflow-visible">
+                        <!-- Arch 1 (Blue) -->
+                        <path d="M 10,5 Q 50,42 90,5" fill="none" stroke="#38BDF8" stroke-width="6" stroke-linecap="round" class="syllable-arch-path" />
+                        <!-- Arch 2 (Red) -->
+                        <path d="M 110,5 Q 150,42 190,5" fill="none" stroke="#F87171" stroke-width="6" stroke-linecap="round" class="syllable-arch-path" style="animation-delay: 0.15s;" />
+                        <!-- Arch 3 (Blue) -->
+                        <path d="M 210,5 Q 250,42 290,5" fill="none" stroke="#38BDF8" stroke-width="6" stroke-linecap="round" class="syllable-arch-path" style="animation-delay: 0.3s;" />
+                    </svg>
+                `;
+            } else {
+                archContainer.innerHTML = '';
+            }
+        }
+
+        /* ==========================================================================
+           WEB SPEECH API (AUDIO AUDIOVOICE)
+           ========================================================================== */
+
+        function getFullAssembledWord() {
+            return state.currentSyllables.map((s, i) => formatSyllableCase(s, i)).join('');
+        }
+
+        function speakText(text, rate = 0.75) {
+            if (!('speechSynthesis' in window)) return;
+            window.speechSynthesis.cancel();
+
+            const utterance = new SpeechSynthesisUtterance(text.toLowerCase());
+            utterance.lang = 'de-DE';
+            utterance.rate = rate; // Slightly slower for children
+            utterance.pitch = 1.1;
+
+            const voices = window.speechSynthesis.getVoices();
+            const deVoice = voices.find(v => v.lang.startsWith('de'));
+            if (deVoice) utterance.voice = deVoice;
+
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function speakWholeWord() {
+            const word = getFullAssembledWord();
+            if (!word) return;
+            playClickSound();
+            speakText(word, 0.8);
+        }
+
+        function speakSingleReelSyllable(index) {
+            const syllable = formatSyllableCase(state.currentSyllables[index], index);
+            if (!syllable) return;
+            playClickSound();
+            speakText(syllable, 0.7);
+        }
+
+        function speakSyllableBySyllable() {
+            if (!('speechSynthesis' in window)) return;
+            window.speechSynthesis.cancel();
+            playClickSound();
+
+            const s1 = formatSyllableCase(state.currentSyllables[0], 0);
+            const s2 = formatSyllableCase(state.currentSyllables[1], 1);
+            const s3 = formatSyllableCase(state.currentSyllables[2], 2);
+            const fullWord = getFullAssembledWord();
+
+            // Sequence: Syllable 1 -> Syllable 2 -> Syllable 3 -> Full Word
+            speakText(s1, 0.65);
+
+            setTimeout(() => {
+                speakText(s2, 0.65);
+            }, 800);
+
+            setTimeout(() => {
+                speakText(s3, 0.65);
+            }, 1600);
+
+            setTimeout(() => {
+                speakText(fullWord, 0.8);
+            }, 2600);
+        }
+
+        /* ==========================================================================
+           STAR REWARDS (SCHATZKISTE)
+           ========================================================================== */
+
+        function markAsRead() {
+            const word = getFullAssembledWord();
+            if (!word) return;
+
+            playStarWinSound();
+
+            state.readHistory.unshift({
+                text: word,
+                timestamp: Date.now()
+            });
+
+            updateStarHistoryUI();
+        }
+
+        function updateStarHistoryUI() {
+            const list = document.getElementById('starHistoryList');
+            const counter = document.getElementById('starCounter');
+            const emptyMsg = document.getElementById('emptyHistoryMsg');
+
+            counter.textContent = state.readHistory.length;
+
+            if (state.readHistory.length === 0) {
+                emptyMsg.style.display = 'block';
+                list.innerHTML = '';
+                list.appendChild(emptyMsg);
+                return;
+            }
+
+            emptyMsg.style.display = 'none';
+            list.innerHTML = '';
+
+            state.readHistory.slice(0, 20).forEach((item) => {
+                const chip = document.createElement('div');
+                chip.className = 'px-3 py-1 bg-amber-100 border-2 border-amber-300 text-amber-950 font-extrabold rounded-2xl text-xs sm:text-sm flex items-center gap-1.5 shadow-sm transform hover:scale-105 transition';
+                chip.innerHTML = `<span>⭐</span> <span>${item.text}</span>`;
+                list.appendChild(chip);
+            });
+        }
+
+        function clearStarHistory() {
+            state.readHistory = [];
+            updateStarHistoryUI();
+            playClickSound();
+        }
+
+        /* ==========================================================================
+           SETTINGS & CONFIGURATION DRAWER
+           ========================================================================== */
+
+        function toggleSettingsDrawer(open) {
+            const drawer = document.getElementById('settingsDrawer');
+            if (open) {
+                renderSettingsInputs();
+                drawer.classList.remove('hidden');
+            } else {
+                validateSettings();
+                drawer.classList.add('hidden');
+                setupReelsUI();
+            }
+            playClickSound();
+        }
+
+        function setLengthMode(mode) {
+            state.lengthMode = mode;
+            updateLengthBadgeUI();
+            renderSettingsInputs();
+        }
+
+        function updateLengthBadgeUI() {
+            const badge = document.getElementById('syllableLengthBadge');
+            if (state.lengthMode === 'mixed') badge.textContent = '3 Silben • Gemischte Länge (2-3 Buchst.)';
+            else if (state.lengthMode === '2only') badge.textContent = '3 Silben • Nur 2 Buchstaben (z.B. MA-LI-MO)';
+            else if (state.lengthMode === '3only') badge.textContent = '3 Silben • Nur 3 Buchstaben (z.B. MAN-LOS-TIM)';
+
+            ['Mixed', '2', '3'].forEach(m => {
+                const btn = document.getElementById(`lengthMode${m}`);
+                if (btn) {
+                    const activeKey = m === 'Mixed' ? 'mixed' : (m === '2' ? '2only' : '3only');
+                    if (state.lengthMode === activeKey) {
+                        btn.className = 'p-2.5 border-2 border-amber-400 bg-amber-100 text-amber-950 font-bold text-xs text-center rounded-xl shadow-sm';
+                    } else {
+                        btn.className = 'p-2.5 border-2 border-slate-200 bg-slate-50 text-slate-600 font-bold text-xs text-center rounded-xl';
+                    }
+                }
+            });
+        }
+
+        function setCaseMode(mode) {
+            state.caseMode = mode;
+            const display = document.getElementById('caseModeDisplay');
+            if (mode === 'title') display.textContent = 'Standard Groß-/Kleinschreibung (Ma-li-mo)';
+            else if (mode === 'upper') display.textContent = 'GROSSBUCHSTABEN (MA-LI-MO)';
+            else display.textContent = 'kleinbuchstaben (ma-li-mo)';
+
+            ['Title', 'Upper', 'Lower'].forEach(m => {
+                const btn = document.getElementById(`case${m}`);
+                if (btn) {
+                    if (state.caseMode === m.toLowerCase()) {
+                        btn.className = 'p-2 border-2 border-emerald-500 bg-emerald-100 text-emerald-950 font-bold text-xs text-center rounded-xl';
+                    } else {
+                        btn.className = 'p-2 border-2 border-slate-200 bg-slate-50 text-slate-600 font-bold text-xs text-center rounded-xl';
+                    }
+                }
+            });
+
+            setupReelsUI();
+        }
+
+        function renderSettingsInputs() {
+            updateLengthBadgeUI();
+            setCaseMode(state.caseMode);
+
+            // Vowels
+            const vGrid = document.getElementById('vowelsGrid');
+            vGrid.innerHTML = '';
+            ALL_VOWELS.forEach(v => {
+                const checked = state.vowels.includes(v);
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.onclick = () => toggleVowel(v);
+                btn.className = `p-2 font-black text-xs sm:text-sm rounded-xl border-2 transition ${
+                    checked 
+                    ? 'bg-rose-500 text-white border-rose-400 shadow' 
+                    : 'bg-slate-100 text-slate-400 border-slate-200 hover:border-rose-300'
+                }`;
+                btn.textContent = v;
+                vGrid.appendChild(btn);
+            });
+
+            // Consonants
+            const cGrid = document.getElementById('consonantsGrid');
+            cGrid.innerHTML = '';
+            ALL_CONSONANTS.forEach(c => {
+                const checked = state.consonants.includes(c);
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.onclick = () => toggleConsonant(c);
+                btn.className = `p-2 font-black text-xs sm:text-sm rounded-xl border-2 transition ${
+                    checked 
+                    ? 'bg-sky-500 text-white border-sky-400 shadow' 
+                    : 'bg-slate-100 text-slate-400 border-slate-200 hover:border-sky-300'
+                }`;
+                btn.textContent = c;
+                cGrid.appendChild(btn);
+            });
+        }
+
+        function toggleVowel(v) {
+            if (state.vowels.includes(v)) {
+                if (state.vowels.length > 1) state.vowels = state.vowels.filter(x => x !== v);
+            } else {
+                state.vowels.push(v);
+            }
+            renderSettingsInputs();
+        }
+
+        function toggleConsonant(c) {
+            if (state.consonants.includes(c)) {
+                if (state.consonants.length > 1) state.consonants = state.consonants.filter(x => x !== c);
+            } else {
+                state.consonants.push(c);
+            }
+            renderSettingsInputs();
+        }
+
+        function applyPreset(level) {
+            if (level === 1) {
+                state.vowels = ['A', 'O', 'I', 'E'];
+                state.consonants = ['M', 'L', 'S', 'R', 'T'];
+            } else if (level === 2) {
+                state.vowels = ['A', 'E', 'I', 'O', 'U'];
+                state.consonants = ['M', 'L', 'S', 'R', 'T', 'N', 'P', 'K', 'D'];
+            } else if (level === 3) {
+                state.vowels = ['A', 'E', 'I', 'O', 'U', 'AU', 'EI'];
+                state.consonants = ['M', 'L', 'S', 'R', 'T', 'N', 'P', 'K', 'D', 'B', 'F', 'G', 'H', 'W', 'Z'];
+            } else if (level === 4) {
+                state.vowels = [...ALL_VOWELS];
+                state.consonants = [...ALL_CONSONANTS];
+            }
+            renderSettingsInputs();
+            playClickSound();
+        }
+
+        function validateSettings() {
+            if (state.vowels.length === 0) state.vowels = ['A'];
+            if (state.consonants.length === 0) state.consonants = ['M'];
+        }
+
+        /* ==========================================================================
+           KEYBOARD SHORTCUTS & INIT
+           ========================================================================== */
+
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                const settingsDrawer = document.getElementById('settingsDrawer');
+                if (settingsDrawer.classList.contains('hidden')) {
+                    e.preventDefault();
+                    spinAllReels();
+                }
+            }
+        });
+
+        window.onload = function() {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.getVoices();
+            }
+            setupReelsUI();
+            updateStarHistoryUI();
+        };
+
+    </script>
+</body>
+</html>
