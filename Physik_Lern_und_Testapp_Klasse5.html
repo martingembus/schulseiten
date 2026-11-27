@@ -1,0 +1,1514 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physik-Trainer: Magnetismus & Elektrizität (Klasse 5)</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #0f172a;
+            --accent-mag: #dc2626;
+            --accent-mag-south: #16a34a;
+            --accent-elec: #eab308;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --error: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding-bottom: 3rem;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+            color: white;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            font-size: 1.6rem;
+            margin-bottom: 0.25rem;
+        }
+
+        header p {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            background: var(--card);
+            padding: 0.5rem;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            flex: 1;
+            min-width: 130px;
+            padding: 0.75rem 1rem;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.95rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+        }
+
+        .tab-btn:hover {
+            background: #f1f5f9;
+            color: var(--text);
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+            animation: fadeIn 0.25s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Progress Bar */
+        .progress-card {
+            background: var(--card);
+            padding: 1rem 1.25rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid var(--border);
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .progress-bar-bg {
+            background: #e2e8f0;
+            height: 12px;
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            background: var(--success);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Checklist Items */
+        .topic-group {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid var(--border);
+        }
+
+        .topic-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .badge-mag {
+            background: #fee2e2;
+            color: #b91c1c;
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+        }
+
+        .badge-elec {
+            background: #fef9c3;
+            color: #a16207;
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+        }
+
+        .checklist-item {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+
+        .checklist-item.checked {
+            border-color: #86efac;
+            background-color: #f0fdf4;
+        }
+
+        .checklist-row {
+            display: flex;
+            align-items: flex-start;
+            padding: 0.85rem 1rem;
+            gap: 0.75rem;
+            cursor: pointer;
+        }
+
+        .checklist-row input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-top: 2px;
+            cursor: pointer;
+            accent-color: var(--success);
+            flex-shrink: 0;
+        }
+
+        .checklist-text {
+            flex: 1;
+            font-size: 0.98rem;
+        }
+
+        .explain-btn {
+            background: #eff6ff;
+            color: var(--primary);
+            border: 1px solid #bfdbfe;
+            padding: 0.3rem 0.65rem;
+            border-radius: 6px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .explain-btn:hover {
+            background: #dbeafe;
+        }
+
+        .explanation-box {
+            display: none;
+            background: #f8fafc;
+            padding: 1rem;
+            border-top: 1px dashed var(--border);
+            font-size: 0.92rem;
+            color: #334155;
+        }
+
+        .explanation-box.open {
+            display: block;
+        }
+
+        /* Interactive Labs */
+        .lab-card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid var(--border);
+        }
+
+        .lab-card h3 {
+            margin-bottom: 0.5rem;
+            font-size: 1.15rem;
+        }
+
+        .lab-desc {
+            color: var(--text-muted);
+            font-size: 0.92rem;
+            margin-bottom: 1rem;
+        }
+
+        .magnet-stage {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: #f1f5f9;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .magnets-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            height: 70px;
+            width: 100%;
+            position: relative;
+        }
+
+        .magnet {
+            display: flex;
+            width: 140px;
+            height: 44px;
+            border-radius: 6px;
+            overflow: hidden;
+            font-weight: bold;
+            color: white;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            user-select: none;
+        }
+
+        .pole-n {
+            flex: 1;
+            background: var(--accent-mag);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pole-s {
+            flex: 1;
+            background: var(--accent-mag-south);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .controls-row {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.55rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-outline {
+            background: white;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-outline:hover {
+            background: #f1f5f9;
+        }
+
+        .status-banner {
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+
+        /* Elementary Magnets Lab */
+        .elem-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 6px;
+            max-width: 420px;
+            margin: 1rem auto;
+            padding: 1rem;
+            background: #e2e8f0;
+            border-radius: 8px;
+            border: 2px solid #94a3b8;
+        }
+
+        .elem-compass {
+            aspect-ratio: 1;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            transition: transform 0.6s ease;
+        }
+
+        .elem-needle {
+            width: 80%;
+            height: 6px;
+            background: linear-gradient(90deg, var(--accent-mag-south) 50%, var(--accent-mag) 50%);
+            border-radius: 3px;
+        }
+
+        /* Circuit Lab */
+        .circuit-svg-box {
+            background: #0f172a;
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        /* Flashcards */
+        .flashcard-container {
+            perspective: 1000px;
+            max-width: 600px;
+            margin: 0 auto 1.5rem auto;
+        }
+
+        .flashcard {
+            background: var(--card);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            min-height: 240px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            transition: transform 0.2s, border-color 0.2s;
+            position: relative;
+        }
+
+        .flashcard:hover {
+            border-color: var(--primary);
+        }
+
+        .fc-tag {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 0.2rem 0.5rem;
+            border-radius: 6px;
+        }
+
+        .fc-hint {
+            position: absolute;
+            bottom: 0.8rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .fc-question {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .fc-answer {
+            font-size: 1.05rem;
+            color: #1e293b;
+            display: none;
+        }
+
+        .flashcard.flipped {
+            background: #eff6ff;
+            border-color: var(--primary);
+        }
+
+        .flashcard.flipped .fc-question {
+            display: none;
+        }
+
+        .flashcard.flipped .fc-answer {
+            display: block;
+        }
+
+        /* Quiz Test Mode */
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .quiz-card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            border: 1px solid var(--border);
+        }
+
+        .quiz-question-text {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .quiz-visual {
+            margin: 1rem 0;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.65rem;
+        }
+
+        .option-btn {
+            text-align: left;
+            padding: 0.9rem 1rem;
+            background: #f8fafc;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.98rem;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-weight: 500;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+
+        .option-btn.correct {
+            border-color: var(--success);
+            background: #dcfce7;
+            color: #14532d;
+            font-weight: 700;
+        }
+
+        .option-btn.wrong {
+            border-color: var(--error);
+            background: #fee2e2;
+            color: #7f1d1d;
+        }
+
+        .quiz-feedback {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            display: none;
+            font-size: 0.95rem;
+        }
+
+        .quiz-feedback.show {
+            display: block;
+        }
+
+        .score-screen {
+            text-align: center;
+            padding: 2rem 1rem;
+        }
+
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem auto;
+            font-size: 1.8rem;
+            font-weight: 800;
+        }
+
+        .score-circle span {
+            font-size: 0.85rem;
+            font-weight: 400;
+        }
+
+        @media (max-width: 600px) {
+            .magnet { width: 110px; height: 38px; font-size: 0.85rem; }
+            .elem-grid { grid-template-columns: repeat(6, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>⚡ Physik-Trainer: Magnetismus & Elektrizität 🧲</h1>
+    <p>Michelsenschule Hildesheim • Klasse 5 • Interaktive Checkliste & Klassenarbeits-Test</p>
+</header>
+
+<div class="container">
+    <!-- Navigation -->
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="switchTab('checklist')">📋 Checkliste & Wissen</button>
+        <button class="tab-btn" onclick="switchTab('cards')">🗂️ Lernkarten</button>
+        <button class="tab-btn" onclick="switchTab('lab')">🔬 Interaktives Labor</button>
+        <button class="tab-btn" onclick="switchTab('quiz')">🎯 Klassenarbeits-Test</button>
+    </div>
+
+    <!-- SECTION 1: CHECKLISTE -->
+    <div id="sec-checklist" class="section active">
+        <div class="progress-card">
+            <div class="progress-header">
+                <span>Dein Lernfortschritt (Checkliste)</span>
+                <span id="progress-text">0 von 22 abgehakt (0%)</span>
+            </div>
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="progress-fill"></div>
+            </div>
+        </div>
+
+        <div class="topic-group" id="checklist-magnetismus">
+            <div class="topic-title">
+                <span class="badge-mag">Thema 1</span> Magnetismus — „Ich kann...“
+            </div>
+            <!-- Items injected via JS -->
+        </div>
+
+        <div class="topic-group" id="checklist-elektrizitaet">
+            <div class="topic-title">
+                <span class="badge-elec">Thema 2</span> Elektrizität — „Ich kann...“
+            </div>
+            <!-- Items injected via JS -->
+        </div>
+    </div>
+
+    <!-- SECTION 2: LERNKARTEN -->
+    <div id="sec-cards" class="section">
+        <div class="controls-row" style="margin-bottom: 1rem;">
+            <button class="btn btn-outline" onclick="filterCards('all')" id="fc-filter-all">Alle Karten</button>
+            <button class="btn btn-outline" onclick="filterCards('mag')" id="fc-filter-mag">🧲 Nur Magnetismus</button>
+            <button class="btn btn-outline" onclick="filterCards('elec')" id="fc-filter-elec">⚡ Nur Elektrizität</button>
+        </div>
+
+        <div class="flashcard-container">
+            <div class="flashcard" id="flashcard" onclick="flipCard()">
+                <span class="fc-tag" id="fc-tag">Magnetismus</span>
+                <div class="fc-question" id="fc-question">Frage lädt...</div>
+                <div class="fc-answer" id="fc-answer">Antwort lädt...</div>
+                <div class="fc-hint">👆 Klicken zum Umdrehen</div>
+            </div>
+        </div>
+
+        <div class="controls-row">
+            <button class="btn btn-outline" onclick="prevCard()">⬅️ Vorherige</button>
+            <span id="fc-counter" style="align-self: center; font-weight: 600; padding: 0 0.75rem;">1 / 10</span>
+            <button class="btn" onclick="nextCard()">Nächste ➡️</button>
+        </div>
+    </div>
+
+    <!-- SECTION 3: INTERAKTIVES LABOR -->
+    <div id="sec-lab" class="section">
+        <!-- Lab 1: Pole & Anziehung -->
+        <div class="lab-card">
+            <h3>1. Stabmagnete & Pole testen</h3>
+            <p class="lab-desc">Drehe die beiden Stabmagnete um und beobachte, ob sie sich anziehen oder abstoßen.</p>
+            <div class="magnet-stage">
+                <div class="magnets-row">
+                    <div class="magnet" id="mag1">
+                        <div class="pole-n">N</div>
+                        <div class="pole-s">S</div>
+                    </div>
+                    <div class="magnet" id="mag2">
+                        <div class="pole-n">N</div>
+                        <div class="pole-s">S</div>
+                    </div>
+                </div>
+                <div class="status-banner" id="mag-status" style="background: #fee2e2; color: #991b1b;">
+                    Südpol trifft auf Nordpol → Ungleichnamige Pole ziehen sich an!
+                </div>
+                <div class="controls-row">
+                    <button class="btn btn-outline" onclick="flipMagnet(1)">🔄 Linken Magnet drehen</button>
+                    <button class="btn btn-outline" onclick="flipMagnet(2)">🔄 Rechten Magnet drehen</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lab 2: Elementarmagnete -->
+        <div class="lab-card">
+            <h3>2. Modell der Elementarmagnete (Magnetisieren & Entmagnetisieren)</h3>
+            <p class="lab-desc">In einem unmagnetischen Eisennagel liegen die winzigen Elementarmagnete durcheinander. Streicht man mit einem Magneten darüber, richten sie sich aus!</p>
+            <div class="elem-grid" id="elem-grid"></div>
+            <div class="status-banner" id="elem-status" style="background: #e2e8f0; color: #334155; margin-bottom: 1rem;">
+                Zustand: Unmagnetisch (Elementarmagnete sind ungeordnet, Wirkung hebt sich auf)
+            </div>
+            <div class="controls-row">
+                <button class="btn" onclick="magnetizeElem()">🧲 Mit Stabmagnet streichen (Magnetisieren)</button>
+                <button class="btn btn-outline" onclick="demagnetizeElem()">🔨 Erschüttern / Erhitzen (Entmagnetisieren)</button>
+            </div>
+        </div>
+
+        <!-- Lab 3: Einfacher Stromkreis -->
+        <div class="lab-card">
+            <h3>3. Stromkreis & Leiter-Tester</h3>
+            <p class="lab-desc">Schließe den Schalter und lege verschiedene Gegenstände in die Lücke, um zu testen, ob die Lampe leuchtet.</p>
+            <div class="circuit-svg-box">
+                <svg id="circuit-svg" viewBox="0 0 420 200" width="100%" style="max-width: 460px;">
+                    <!-- Wires -->
+                    <polyline points="80,60 80,160 160,160" fill="none" stroke="#94a3b8" stroke-width="4"/>
+                    <polyline points="260,160 340,160 340,60 240,60" fill="none" stroke="#94a3b8" stroke-width="4"/>
+                    <line x1="80" y1="60" x2="140" y2="60" stroke="#94a3b8" stroke-width="4"/>
+
+                    <!-- Battery (Top Center) -->
+                    <line x1="140" y1="40" x2="140" y2="80" stroke="#ef4444" stroke-width="5"/>
+                    <line x1="160" y1="50" x2="160" y2="70" stroke="#3b82f6" stroke-width="5"/>
+                    <text x="125" y="35" fill="#ef4444" font-size="14" font-weight="bold">+</text>
+                    <text x="165" y="35" fill="#3b82f6" font-size="14" font-weight="bold">−</text>
+                    <line x1="160" y1="60" x2="190" y2="60" stroke="#94a3b8" stroke-width="4"/>
+
+                    <!-- Switch (Top Right-ish) -->
+                    <circle cx="190" cy="60" r="4" fill="#fff"/>
+                    <circle cx="240" cy="60" r="4" fill="#fff"/>
+                    <line id="switch-blade" x1="190" y1="60" x2="235" y2="35" stroke="#facc15" stroke-width="4" stroke-linecap="round"/>
+                    <text x="195" y="25" fill="#cbd5e1" font-size="12">Schalter</text>
+
+                    <!-- Lamp (Right side) -->
+                    <circle id="lamp-glow" cx="340" cy="110" r="26" fill="rgba(250, 204, 21, 0)" />
+                    <circle cx="340" cy="110" r="16" fill="#1e293b" stroke="#fff" stroke-width="3"/>
+                    <line x1="329" y1="99" x2="351" y2="121" stroke="#fff" stroke-width="2.5"/>
+                    <line x1="351" y1="99" x2="329" y2="121" stroke="#fff" stroke-width="2.5"/>
+                    <text x="364" y="114" fill="#cbd5e1" font-size="12">Lampe</text>
+
+                    <!-- Test Gap (Bottom) -->
+                    <circle cx="160" cy="160" r="4" fill="#fff"/>
+                    <circle cx="260" cy="160" r="4" fill="#fff"/>
+                    <rect id="test-material-box" x="165" y="148" width="90" height="24" rx="4" fill="#334155" stroke="#64748b" stroke-width="2"/>
+                    <text id="test-material-label" x="210" y="164" fill="#fff" font-size="11" text-anchor="middle" font-weight="bold">Lücke (Luft)</text>
+                </svg>
+            </div>
+            <div class="controls-row" style="margin-bottom: 0.75rem;">
+                <button class="btn" id="toggle-switch-btn" onclick="toggleSwitch()">🔌 Schalter schließen</button>
+            </div>
+            <div class="controls-row">
+                <button class="btn btn-outline" onclick="setMaterial('Luft', false)">Luft (Lücke)</button>
+                <button class="btn btn-outline" onclick="setMaterial('Kupferdraht', true)">Kupferdraht</button>
+                <button class="btn btn-outline" onclick="setMaterial('Radiergummi', false)">Radiergummi</button>
+                <button class="btn btn-outline" onclick="setMaterial('Eisennagel', true)">Eisennagel</button>
+                <button class="btn btn-outline" onclick="setMaterial('Plastiklineal', false)">Plastiklineal</button>
+                <button class="btn btn-outline" onclick="setMaterial('Graphitmine', true)">Bleistiftmine (Graphit)</button>
+            </div>
+            <div class="status-banner" id="circuit-status" style="margin-top: 1rem; background: #fee2e2; color: #991b1b;">
+                Lampe aus: Der Schalter ist offen und der Stromkreis ist unterbrochen.
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 4: KLASSENARBEITS-TEST -->
+    <div id="sec-quiz" class="section">
+        <div class="quiz-header">
+            <div>
+                <label for="quiz-topic" style="font-weight: 600; margin-right: 0.5rem;">Themenwahl:</label>
+                <select id="quiz-topic" onchange="startQuiz()" style="padding: 0.45rem 0.75rem; border-radius: 8px; border: 1px solid var(--border); font-size: 0.95rem;">
+                    <option value="all">Alle Themen (20 Fragen)</option>
+                    <option value="mag">Nur Magnetismus (14 Fragen)</option>
+                    <option value="elec">Nur Elektrizität (6 Fragen)</option>
+                </select>
+            </div>
+            <div style="font-weight: 700; color: var(--primary);" id="quiz-score-live">Punkte: 0</div>
+        </div>
+
+        <div id="quiz-area" class="quiz-card">
+            <!-- Quiz rendered via JS -->
+        </div>
+    </div>
+</div>
+
+<script>
+// --- DATEN: CHECKLISTE (Exakt nach Vorgabe der Michelsenschule) ---
+const checklistData = [
+    // Magnetismus (17 Punkte)
+    {
+        id: "m1",
+        topic: "mag",
+        text: "Ich kann Gegenstände aus meinem Alltag nennen, in denen Magnete stecken und beschreiben, wofür man sie nutzt.",
+        explanation: "<strong>Beispiele im Alltag:</strong><br>• <strong>Kühlschranktür / Pinnwand:</strong> Hält Notizen fest oder sorgt dafür, dass die Tür luftdicht schließt.<br>• <strong>Kompass:</strong> Die Magnetnadel richtet sich nach dem Erdmagnetfeld aus und zeigt nach Norden.<br>• <strong>Fahrraddynamo / Elektromotor:</strong> Ein drehender Magnet erzeugt Strom (oder sorgt für Bewegung).<br>• <strong>Handyhülle / Federmäppchen:</strong> Magnetverschlüsse halten Klappen sicher zu.<br>• <strong>Lautsprecher / Kopfhörer:</strong> Zusammen mit einer Spule erzeugt ein Magnet Schallwellen."
+    },
+    {
+        id: "m2",
+        topic: "mag",
+        text: "Ich kann angeben, ob ein Gegenstand magnetisch ist, wenn ich weiß, woraus er besteht.",
+        explanation: "<strong>Merksatz für Metalle (Fe-Co-Ni):</strong><br>Nur drei Metalle (und deren Mischungen/Legierungen wie Stahl) sind ferromagnetisch und werden von Magneten angezogen:<br>• <strong>Eisen (Fe)</strong> (z. B. Büroklammer, Eisennagel, Stahl)<br>• <strong>Cobalt (Co)</strong><br>• <strong>Nickel (Ni)</strong><br><em>Nicht magnetisch</em> sind z. B. Aluminium, Kupfer, Gold, Silber, Holz, Plastik, Glas und Papier."
+    },
+    {
+        id: "m3",
+        topic: "mag",
+        text: "Ich kann ein Experiment beschreiben, um herauszufinden, welcher Pol eines Magneten der Nordpol ist.",
+        explanation: "<strong>Versuchsaufbau (Drehbar lagern):</strong><br>1. Hänge den unbekannten Stabmagneten in der Mitte an einem dünnen Faden frei drehbar auf (oder lege ihn auf ein Stück Styropor in eine Schüssel mit Wasser).<br>2. Warte, bis er zur Ruhe kommt.<br>3. Der Magnet richtet sich im Erdmagnetfeld aus: Das Ende, das nach geografisch <strong>Norden</strong> zeigt, ist der <strong>Nordpol</strong> des Magneten.<br><em>Alternative:</em> Mit einem bekannten Magneten testen – der Pol, der vom bekannten Südpol angezogen wird, ist der Nordpol."
+    },
+    {
+        id: "m4",
+        topic: "mag",
+        text: "Ich kann beschreiben, was passiert, wenn man zwei Stabmagnete in unterschiedlicher Ausrichtung aufeinander zu bewegt.",
+        explanation: "<strong>Grundgesetz des Magnetismus:</strong><br>• <strong>Ungleichnamige Pole ziehen sich an:</strong> Nordpol + Südpol (oder Südpol + Nordpol) bewegen sich aufeinander zu und haften aneinander.<br>• <strong>Gleichnamige Pole stoßen sich ab:</strong> Nordpol + Nordpol oder Südpol + Südpol drücken sich voneinander weg."
+    },
+    {
+        id: "m5",
+        topic: "mag",
+        text: "Ich kann die Pole von Magneten einzeichnen, wenn sie sich anziehen/abstoßen.",
+        explanation: "<strong>So gehst du vor:</strong><br>• Wenn zwischen zwei Magneten <strong>Anziehungspfeile (→ ←)</strong> gezeichnet sind, müssen an den zugewandten Enden <strong>unterschiedliche Pole</strong> stehen (z. B. links S, rechts N).<br>• Wenn <strong>Abstoßungspfeile (← →)</strong> gezeichnet sind, stehen an den zugewandten Enden <strong>gleiche Pole</strong> (z. B. N und N oder S und S). Vergiss nicht: Jeder Magnet hat am anderen Ende immer den Gegenpol!"
+    },
+    {
+        id: "m6",
+        topic: "mag",
+        text: "Ich kann beschreiben, wie ein Nagel magnetisiert werden kann.",
+        explanation: "<strong>Anleitung zum Magnetisieren:</strong><br>1. Nimm einen Eisennagel und einen starken Stabmagneten.<br>2. Setze einen Pol (z. B. den Nordpol) am Kopf des Nagels an und streiche <strong>mehrmals in immer derselben Richtung</strong> bis zur Nagelspitze.<br>3. Hebe den Magneten an der Spitze im großen Bogen ab und setze wieder am Kopf an (nicht hin und her reiben!).<br>Dadurch richten sich die Elementarmagnete im Nagel einheitlich aus."
+    },
+    {
+        id: "m7",
+        topic: "mag",
+        text: "Ich kann begründen, warum eine bestimmte Nagelkette auch ohne Stabmagnet halten kann.",
+        explanation: "<strong>Begründung:</strong><br>Solange die Eisennägel am Stabmagneten hängen, werden sie durch dessen Magnetfeld selbst vorübergehend magnetisiert (Influenz). Bei <strong>hartmagnetischem Material (z. B. Stahl)</strong> bleiben die Elementarmagnete auch nach dem Entfernen des Stabmagneten größtenteils geordnet. Deshalb bleibt der Nagel ein Dauermagnet und hält weitere Nägel fest. (Bei weichem Eisen fallen sie meist sofort ab)."
+    },
+    {
+        id: "m8",
+        topic: "mag",
+        text: "Ich kann beschreiben, was passiert, wenn man einen Magneten durchbricht.",
+        explanation: "<strong>Beobachtung:</strong><br>Bricht man einen Stabmagneten in zwei Teile, erhält man <strong>zwei neue vollständige Magnete</strong>, von denen jeder wieder einen eigenen Nordpol und einen eigenen Südpol besitzt. An der Bruchstelle entstehen genau die entgegengesetzten Pole, sodass sich die beiden Bruchstücke sogar wieder anziehen."
+    },
+    {
+        id: "m9",
+        topic: "mag",
+        text: "Ich kann erklären, warum Nordpol und Südpol nicht voneinander getrennt werden können.",
+        explanation: "<strong>Erklärung mit Elementarmagneten:</strong><br>Jeder Magnet besteht aus unzähligen winzigen Elementarmagneten, von denen jeder einzelne bereits einen Nord- und einen Südpol hat. Egal wie oft man den Magneten zerteilt, an den Bruchenden schauen immer die Nordpole der einen Seite und die Südpole der anderen Seite heraus. Einzelne Pole (Monopole) gibt es nicht."
+    },
+    {
+        id: "m10",
+        topic: "mag",
+        text: "Ich kann das Modell der Elementarmagnete beschreiben und für Erklärungen nutzen.",
+        explanation: "<strong>Das Modell:</strong><br>Man stellt sich vor, dass magnetisierbare Stoffe (Eisen, Cobalt, Nickel) aus vielen winzigen Magneten (Elementarmagneten) bestehen.<br>• <strong>Unmagnetisch:</strong> Alle Elementarmagnete zeigen ungeordnet in verschiedene Richtungen – nach außen heben sich ihre Kräfte auf.<br>• <strong>Magnetisch:</strong> Alle Elementarmagnete sind in die gleiche Richtung ausgerichtet – ihre Kräfte verstärken sich zu einem großen Nord- und Südpol."
+    },
+    {
+        id: "m11",
+        topic: "mag",
+        text: "Ich kann anhand der Elementarmagnete erklären, was beim Entmagnetisieren passiert.",
+        explanation: "<strong>Entmagnetisieren durch Erschüttern (z. B. Hämmern) oder starkes Erhitzen:</strong><br>Durch die starken Stöße oder die Wärmebewegung geraten die ordentlich ausgerichteten Elementarmagnete wieder in Bewegung und verdrehen sich. Sie liegen danach wieder völlig <strong>ungeordnet (durcheinander)</strong>, sodass der Gegenstand keine magnetische Wirkung mehr nach außen hat."
+    },
+    {
+        id: "m12",
+        topic: "mag",
+        text: "Ich kann erklären, was ein Magnetfeld ist und ein Experiment beschreiben, wie man seine Wirkung sichtbar machen kann.",
+        explanation: "<strong>Magnetfeld:</strong> Der Raum um einen Magneten, in dem magnetische Kräfte auf andere Magnete oder Eisen wirken.<br><strong>Experiment (Eisenfeilspäne):</strong><br>Lege ein Blatt Papier (oder eine Glasplatte) auf einen Stabmagneten und streue feine <strong>Eisenfeilspäne</strong> darüber. Klopfe leicht auf das Papier. Die Späne werden magnetisiert und ordnen sich in typischen Bögen von Pol zu Pol an."
+    },
+    {
+        id: "m13",
+        topic: "mag",
+        text: "Ich kann das Modell der Magnetfeldlinien erklären, indem ich die Eigenschaften von Magnetfeldlinien beschreibe.",
+        explanation: "<strong>Eigenschaften von Feldlinien:</strong><br>1. Sie verlaufen außerhalb des Magneten immer vom <strong>Nordpol zum Südpol</strong> (Pfeilrichtung N → S).<br>2. Sie sind geschlossene Linien (laufen im Inneren des Magneten von S nach N weiter).<br>3. Sie <strong>schneiden sich niemals</strong>.<br>4. Je <strong>dichter</strong> die Linien beieinander liegen, desto <strong>stärker</strong> ist das Magnetfeld an dieser Stelle."
+    },
+    {
+        id: "m14",
+        topic: "mag",
+        text: "Ich kann erklären, warum sich Magnetfeldlinien nicht schneiden können.",
+        explanation: "<strong>Erklärung:</strong><br>Eine Feldlinie gibt an jedem Punkt im Raum die <strong>eindeutige Richtung</strong> an, in die sich der Nordpol einer kleinen Kompassnadel ausrichtet. Würden sich zwei Feldlinien schneiden, müsste eine Kompassnadel am Schnittpunkt gleichzeitig in zwei verschiedene Richtungen zeigen – das ist unmöglich."
+    },
+    {
+        id: "m15",
+        topic: "mag",
+        text: "Ich kann Magnetfeldlinien zu verschiedenen Magneten einzeichnen.",
+        explanation: "<strong>Zeichentipps für die Klassenarbeit:</strong><br>• <strong>Stabmagnet:</strong> Symmetrische Bögen vom Nordpol zum Südpol (in der Mitte fast gerade, außen weit geschwungen). Pfeile zeigen immer von <strong>N nach S</strong>!<br>• <strong>Hufeisenmagnet:</strong> Zwischen den beiden Polen (Schenkeln) verlaufen die Linien fast parallel und gerade von N nach S; außen wölben sie sich leicht nach außen."
+    },
+    {
+        id: "m16",
+        topic: "mag",
+        text: "Ich kann an einem Magnetfeldlinienbild erkennen, ob sich zwei Magnete anziehen oder abstoßen würden.",
+        explanation: "<strong>Blick auf die Linien zwischen den Polen:</strong><br>• <strong>Anziehung:</strong> Die Feldlinien laufen direkt vom einen Pol zum anderen Pol hinüber (sie verbinden die beiden Magnete).<br>• <strong>Abstoßung:</strong> Die Feldlinien weichen einander aus, biegen stark zur Seite weg und lassen in der Mitte einen leeren Raum ohne Linien."
+    },
+    {
+        id: "m17",
+        topic: "mag",
+        text: "Ich kann anhand des Magnetfeldlinienbildes erklären, wo die magnetische Wirkung eines Magneten am stärksten ist.",
+        explanation: "<strong>Antwort:</strong><br>An den <strong>beiden Polen (Nordpol und Südpol)</strong> ist die magnetische Wirkung am stärksten. Das erkennt man im Feldlinienbild daran, dass die Magnetfeldlinien an den Polen <strong>am dichtesten</strong> (engsten) beieinander liegen. In der Mitte des Stabmagneten (indifferente Zone) liegen die Linien weit auseinander – dort ist die Wirkung am schwächsten."
+    },
+
+    // Elektrizität (5 Punkte)
+    {
+        id: "e1",
+        topic: "elec",
+        text: "Ich kann einen Stromkreis auf einer Stecktafel einzeichnen.",
+        explanation: "<strong>So zeichnest du auf einer Stecktafel:</strong><br>Verbinde die Bauteile (Batterie/Spannungsquelle, Schalter, Lampe) über die Steckpunkte mit geraden Linien (Kabeln) so, dass ein geschlossener Rundweg vom Pluspol über alle Bauteile zurück zum Minuspol entsteht. Achte darauf, dass Bauteile an ihren beiden Anschlüssen (nicht zweimal am selben Punkt!) verbunden sind."
+    },
+    {
+        id: "e2",
+        topic: "elec",
+        text: "Ich kann erklären, welche Bedingungen ein Stromkreis erfüllen muss, damit eine Lampe leuchtet.",
+        explanation: "<strong>3 Bedingungen für ein Leuchten:</strong><br>1. Es muss eine <strong>Spannungsquelle</strong> (z. B. Batterie) vorhanden sein.<br>2. Der Stromkreis muss <strong>geschlossen</strong> sein (Schalter zu, kein Kabelbruch, kein Isolator dazwischen).<br>3. Alle Bauteile (Lampe, Kabel, Batterie) müssen <strong>funktionsfähig</strong> sein und aus <strong>leitenden Materialien</strong> bestehen."
+    },
+    {
+        id: "e3",
+        topic: "elec",
+        text: "Ich kann Fehler in einem Stromkreis erkennen und beheben.",
+        explanation: "<strong>Typische Fehler in Aufgaben:</strong><br>• <strong>Offener Schalter:</strong> Schalter schließen.<br>• <strong>Kurzschluss:</strong> Ein Kabel überbrückt die Lampe direkt von Plus nach Minus → das Überbrückungskabel entfernen!<br>• <strong>Falsch angeschlossene Glühlampe:</strong> Beide Kabel gehen an das Gewinde (oder beide an den Fußkontakt) → ein Kabel ans Gewinde, eines an den Fußkontakt anschließen.<br>• <strong>Isolator im Kreis:</strong> Ein Stück Plastik oder Holz unterbricht den Kreis → durch Metallkabel ersetzen."
+    },
+    {
+        id: "e4",
+        topic: "elec",
+        text: "Ich kann Schaltskizzen nach einer Beschreibung erstellen, indem ich verschiedene Schaltsymbole nutze.",
+        explanation: "<strong>Wichtige Schaltsymbole (mit Lineal und Bleistift zeichnen!):</strong><br>• <strong>Leitung (Kabel):</strong> Gerader Strich (Ecken immer rechtwinklig zeichnen!).<br>• <strong>Batterie:</strong> Ein langer dünner Strich (+) und parallel daneben ein kurzer dicker Strich (−).<br>• <strong>Glühlampe:</strong> Ein Kreis mit einem Kreuz darin (⊗).<br>• <strong>Schalter (offen / geschlossen):</strong> Zwei Punkte mit einer schrägen (offen) oder geraden (geschlossen) Linie dazwischen."
+    },
+    {
+        id: "e5",
+        topic: "elec",
+        text: "Ich kann Gegenstände nennen, die Strom sehr gut, bzw. sehr schlecht leiten.",
+        explanation: "<strong>Gute elektrische Leiter:</strong><br>Alle <strong>Metalle</strong> (z. B. Kupfer, Eisen, Aluminium, Gold, Silber, Messing) sowie <strong>Graphit</strong> (Bleistiftmine) und Salzwasser.<br><br><strong>Schlechte Leiter (Isolatoren / Nichtleiter):</strong><br>Kunststoff (Plastik), Gummi, Holz (trocken), Glas, Porzellan, Papier und Luft."
+    }
+];
+
+// --- DATEN: LERNKARTEN ---
+const flashcardsData = [
+    { topic: "mag", q: "Welche drei Metalle sind magnetisch (ferromagnetisch)?", a: "Eisen (Fe), Cobalt (Co) und Nickel (Ni) – sowie Stahl (enthält Eisen)." },
+    { topic: "mag", q: "Wie lautet das Grundgesetz der magnetischen Pole?", a: "Ungleichnamige Pole (N und S) ziehen sich an. Gleichnamige Pole (N und N oder S und S) stoßen sich ab." },
+    { topic: "mag", q: "Wie findet man ohne Beschriftung heraus, wo der Nordpol eines Stabmagneten ist?", a: "Man hängt ihn an einem Faden frei drehbar auf (oder legt ihn auf Styropor ins Wasser). Das Ende, das nach geografisch Norden zeigt, ist der Nordpol." },
+    { topic: "mag", q: "Wie magnetisiert man einen Eisennagel richtig?", a: "Man streicht mit einem Pol eines Stabmagneten mehrmals immer in derselben Richtung über den Nagel und hebt den Magneten im großen Bogen wieder ab." },
+    { topic: "mag", q: "Was passiert, wenn man einen Stabmagneten in der Mitte durchbricht?", a: "Es entstehen zwei neue, vollständige Magnete, die jeweils wieder einen eigenen Nordpol und einen eigenen Südpol haben." },
+    { topic: "mag", q: "Erkläre den Unterschied zwischen unmagnetischem und magnetischem Eisen mit Elementarmagneten.", a: "Unmagnetisch: Elementarmagnete liegen ungeordnet durcheinander. Magnetisch: Elementarmagnete sind alle in dieselbe Richtung ausgerichtet." },
+    { topic: "mag", q: "Wie kann man einen Magneten entmagnetisieren und was passiert dabei?", a: "Durch starkes Erschüttern (Hämmern) oder starkes Erhitzen. Dabei geraten die Elementarmagnete wieder in Unordnung." },
+    { topic: "mag", q: "In welche Richtung zeigen Magnetfeldlinien außerhalb des Magneten?", a: "Immer vom Nordpol zum Südpol (N → S)." },
+    { topic: "mag", q: "Warum dürfen sich Magnetfeldlinien niemals schneiden?", a: "Weil eine Kompassnadel an jedem Ort nur eine einzige Richtung anzeigen kann – am Schnittpunkt müsste sie in zwei Richtungen gleichzeitig zeigen." },
+    { topic: "mag", q: "Woran erkennt man im Feldlinienbild, wo der Magnet am stärksten wirkt?", a: "Dort, wo die Feldlinien am dichtesten beieinander liegen – also direkt an den beiden Polen (Nordpol und Südpol)." },
+    { topic: "elec", q: "Welche 3 Bedingungen müssen erfüllt sein, damit eine Lampe im Stromkreis leuchtet?", a: "1. Eine Spannungsquelle (Batterie) ist angeschlossen. 2. Der Stromkreis ist geschlossen. 3. Alle Bauteile sind heil und bestehen aus elektrischen Leitern." },
+    { topic: "elec", q: "Nenne 4 gute elektrische Leiter und 4 Isolatoren (Nichtleiter).", a: "Leiter: Kupfer, Eisen, Aluminium, Gold (alle Metalle) und Graphit. Isolatoren: Plastik, Gummi, Holz, Glas, Luft." },
+    { topic: "elec", q: "Was ist ein Kurzschluss und warum ist er gefährlich?", a: "Wenn Plus- und Minuspol einer Batterie direkt ohne Verbraucher (Lampe) durch ein Kabel verbunden sind. Es fließt ein sehr starker Strom, Kabel und Batterie werden heiß." },
+    { topic: "elec", q: "Wo müssen die zwei Kabel an einer Glühlampe angeschlossen werden, damit sie leuchtet?", a: "Ein Kabel muss an das Metallgewinde (Schraubsockel) und das andere an den unteren Fußkontakt angeschlossen werden." }
+];
+
+// --- DATEN: KLASSENARBEITS-TEST ---
+const quizQuestions = [
+    {
+        topic: "mag",
+        q: "Du hältst einen Stabmagneten an verschiedene Gegenstände aus deinem Federmäppchen. Welcher Gegenstand wird angezogen?",
+        options: ["Ein Radiergummi", "Eine Büroklammer aus Stahl", "Ein Lineal aus Plastik", "Ein Spitzer aus reinem Aluminium"],
+        correct: 1,
+        feedback: "Richtig! Stahl besteht hauptsächlich aus Eisen und ist magnetisch. Aluminium, Gummi und Plastik werden nicht angezogen."
+    },
+    {
+        topic: "mag",
+        q: "Zwei Stabmagnete liegen hintereinander und stoßen sich ab. Der linke Magnet hat links seinen Nordpol. Welcher Pol des rechten Magneten zeigt zum linken Magneten?",
+        visual: `<svg viewBox="0 0 320 60" width="280"><rect x="10" y="15" width="60" height="30" fill="#dc2626"/><text x="40" y="35" fill="white" font-weight="bold" text-anchor="middle">N</text><rect x="70" y="15" width="60" height="30" fill="#64748b"/><text x="100" y="35" fill="white" font-weight="bold" text-anchor="middle">?</text><text x="160" y="35" font-weight="bold" text-anchor="middle">← →</text><rect x="190" y="15" width="60" height="30" fill="#64748b"/><text x="220" y="35" fill="white" font-weight="bold" text-anchor="middle">?</text><rect x="250" y="15" width="60" height="30" fill="#64748b"/><text x="280" y="35" fill="white" font-weight="bold" text-anchor="middle">?</text></svg>`,
+        options: ["Der Nordpol", "Der Südpol", "Beide Pole gleichzeitig", "Das kann man nicht sagen"],
+        correct: 1,
+        feedback: "Genau! Wenn der linke Magnet links seinen Nordpol hat, ist rechts sein Südpol. Da sich die Magnete abstoßen (← →), muss beim rechten Magneten ebenfalls der Südpol innen liegen!"
+    },
+    {
+        topic: "mag",
+        q: "Wie kannst du herausfinden, welches Ende eines unbeschrifteten Stabmagneten der Nordpol ist?",
+        options: [
+            "Man hält ihn an eine Büroklammer – nur der Nordpol zieht Eisen an.",
+            "Man hängt ihn an einem dünnen Faden frei drehbar auf; das Ende, das nach Norden zeigt, ist der Nordpol.",
+            "Man taucht ihn in Wasser; der Nordpol sinkt nach unten.",
+            "Man reibt ihn an einem Wolltuch."
+        ],
+        correct: 1,
+        feedback: "Richtig! Ein frei drehbarer Magnet wirkt wie eine Kompassnadel und richtet seinen Nordpol nach geografisch Norden aus."
+    },
+    {
+        topic: "mag",
+        q: "Was passiert, wenn du einen Stabmagneten genau in der Mitte durchsägst?",
+        options: [
+            "Du erhältst einen reinen Nordpol-Magneten und einen reinen Südpol-Magneten.",
+            "Beide Teile verlieren sofort ihre gesamte magnetische Kraft.",
+            "Du erhältst zwei kleinere Magnete, von denen jeder wieder einen Nord- und einen Südpol hat.",
+            "Nur das größere Stück bleibt magnetisch."
+        ],
+        correct: 2,
+        feedback: "Richtig! Nord- und Südpol lassen sich niemals trennen. Jedes Bruchstück wird wieder ein vollständiger Magnet."
+    },
+    {
+        topic: "mag",
+        q: "Wie muss man vorgehen, um einen Eisennagel dauerhaft zu magnetisieren?",
+        options: [
+            "Man reibt mit dem Magneten schnell auf dem Nagel hin und her.",
+            "Man streicht mit einem Pol des Magneten mehrmals immer in derselben Richtung über den Nagel und hebt ihn im weiten Bogen ab.",
+            "Man legt den Nagel neben einen Radiergummi.",
+            "Man schlägt mit einem Hammer kräftig auf den Nagel."
+        ],
+        correct: 1,
+        feedback: "Perfekt! Durch das Streichen in nur einer Richtung werden die Elementarmagnete im Nagel einheitlich ausgerichtet."
+    },
+    {
+        topic: "mag",
+        q: "Warum hält eine Kette aus mehreren Stahlnägeln manchmal sogar dann noch zusammen, wenn man den Stabmagneten oben vorsichtig wegnimmt?",
+        options: [
+            "Weil die Nägel durch Klebstoff aneinander haften.",
+            "Weil die Elementarmagnete in den Stahlnägeln ausgerichtet bleiben und die Nägel selbst zu kleinen Magneten geworden sind.",
+            "Weil Luftdruck die Nägel zusammendrückt.",
+            "Weil Stahl kein Eisen enthält."
+        ],
+        correct: 1,
+        feedback: "Richtig! Stahl ist hartmagnetisch: Seine Elementarmagnete behalten ihre Ordnung bei, sodass die Nägel selbst als Magnete wirken."
+    },
+    {
+        topic: "mag",
+        q: "Wie sieht es im Inneren eines unmagnetischen Eisennagels nach dem Modell der Elementarmagnete aus?",
+        options: [
+            "Er enthält gar keine Elementarmagnete.",
+            "Alle Elementarmagnete zeigen genau nach oben.",
+            "Die Elementarmagnete liegen völlig ungeordnet in alle möglichen Richtungen.",
+            "Alle Elementarmagnete haben nur einen Nordpol."
+        ],
+        correct: 2,
+        feedback: "Genau! Weil sie ungeordnet durcheinander liegen, heben sich ihre magnetischen Wirkungen nach außen gegenseitig auf."
+    },
+    {
+        topic: "mag",
+        q: "Was passiert mit den Elementarmagneten, wenn man einen magnetisierten Stahlnagel stark erhitzt oder oft auf den Boden fallen lässt?",
+        options: [
+            "Sie richten sich noch ordentlicher aus.",
+            "Sie geraten in Bewegung und liegen danach wieder ungeordnet durcheinander (Entmagnetisierung).",
+            "Sie verwandeln sich in Kupfer.",
+            "Sie schmelzen zu einem einzigen Nordpol zusammen."
+        ],
+        correct: 1,
+        feedback: "Richtig! Durch Erschütterung oder Hitze verlieren die Elementarmagnete ihre Ausrichtung – der Nagel wird entmagnetisiert."
+    },
+    {
+        topic: "mag",
+        q: "Welche Aussage über Magnetfeldlinien ist RICHTIG?",
+        options: [
+            "Magnetfeldlinien verlaufen außerhalb des Magneten vom Südpol zum Nordpol.",
+            "Magnetfeldlinien schneiden sich genau in der Mitte des Magneten.",
+            "Magnetfeldlinien verlaufen außerhalb des Magneten vom Nordpol zum Südpol und schneiden sich nie.",
+            "Magnetfeldlinien sind nur bei Hufeisenmagneten vorhanden."
+        ],
+        correct: 2,
+        feedback: "Super! Feldlinien zeigen außerhalb immer von N nach S und schneiden sich niemals."
+    },
+    {
+        topic: "mag",
+        q: "Warum können sich zwei Magnetfeldlinien niemals schneiden?",
+        options: [
+            "Weil sie aus Metall bestehen.",
+            "Weil eine Kompassnadel an einem Punkt nicht gleichzeitig in zwei verschiedene Richtungen zeigen kann.",
+            "Weil der Südpol das verhindert.",
+            "Weil Magnetfelder nur zweidimensional sind."
+        ],
+        correct: 1,
+        feedback: "Richtig! Die Feldlinie gibt die eindeutige Kraftrichtung auf einen Nordpol an – zwei verschiedene Richtungen an exakt demselben Ort sind unmöglich."
+    },
+    {
+        topic: "mag",
+        q: "Schau dir das Magnetfeldlinienbild an: Zwischen zwei Magneten laufen die Feldlinien direkt von einem Pol zum anderen hinüber. Was passiert?",
+        visual: `<svg viewBox="0 0 260 80" width="240"><rect x="10" y="25" width="50" height="30" fill="#64748b"/><rect x="200" y="25" width="50" height="30" fill="#64748b"/><line x1="60" y1="30" x2="200" y2="30" stroke="#2563eb" stroke-width="2"/><line x1="60" y1="40" x2="200" y2="40" stroke="#2563eb" stroke-width="2"/><line x1="60" y1="50" x2="200" y2="50" stroke="#2563eb" stroke-width="2"/><path d="M 60 26 Q 130 10 200 26" fill="none" stroke="#2563eb" stroke-width="2"/><path d="M 60 54 Q 130 70 200 54" fill="none" stroke="#2563eb" stroke-width="2"/></svg>`,
+        options: [
+            "Die beiden Magnete stoßen sich ab.",
+            "Die beiden Magnete ziehen sich an.",
+            "Es wirkt gar keine Kraft.",
+            "Beide Magnete drehen sich im Kreis."
+        ],
+        correct: 1,
+        feedback: "Richtig! Durchgehende Feldlinien zwischen zwei Polen bedeuten immer Anziehung (ungleichnamige Pole)."
+    },
+    {
+        topic: "mag",
+        q: "Wo ist die magnetische Wirkung eines Stabmagneten am stärksten, und woran erkennt man das im Feldlinienbild?",
+        options: [
+            "In der Mitte, weil dort die Linien parallel laufen.",
+            "An den Polen, weil dort die Magnetfeldlinien am dichtesten beieinander liegen.",
+            "Überall gleich stark, weil die Linien geschlossen sind.",
+            "Weit außerhalb des Magneten."
+        ],
+        correct: 1,
+        feedback: "Genau! Je enger (dichter) die Feldlinien zusammenliegen, desto stärker ist die magnetische Kraft – und das ist an den Polen der Fall."
+    },
+    {
+        topic: "mag",
+        q: "Wie macht man das unsichtbare Magnetfeld eines Stabmagneten im Unterricht sichtbar?",
+        options: [
+            "Man beleuchtet den Magneten mit einer Taschenlampe.",
+            "Man legt ein Blatt Papier darüber und streut feine Eisenfeilspäne darauf.",
+            "Man hält einen Plastikstab daneben.",
+            "Man legt den Magneten auf eine Waage."
+        ],
+        correct: 1,
+        feedback: "Richtig! Die kleinen Eisenfeilspäne werden magnetisiert und ordnen sich wie winzige Kompassnadeln entlang der Feldlinien an."
+    },
+    {
+        topic: "mag",
+        q: "Wofür werden Magnete in einem Fahrrad-Dynamo genutzt?",
+        options: [
+            "Damit das Fahrrad nicht umfällt.",
+            "Um durch Drehung eines Magneten elektrischen Strom für das Fahrradlicht zu erzeugen.",
+            "Um die Reifen aufzupumpen.",
+            "Um die Kette zu ölen."
+        ],
+        correct: 1,
+        feedback: "Stimmt! Im Dynamo dreht sich ein Magnet in einer Drahtspule und erzeugt dadurch elektrische Energie."
+    },
+    {
+        topic: "elec",
+        q: "Welche Bedingung muss erfüllt sein, damit eine Glühlampe in einem einfachen Stromkreis leuchtet?",
+        options: [
+            "Der Schalter muss geöffnet sein.",
+            "Es reicht, wenn nur der Pluspol der Batterie mit der Lampe verbunden ist.",
+            "Der Stromkreis muss vom Pluspol über die Bauteile bis zum Minuspol geschlossen sein.",
+            "In den Stromkreis muss ein Stück Gummi eingebaut sein."
+        ],
+        correct: 2,
+        feedback: "Richtig! Elektrischer Strom fließt nur in einem vollständig geschlossenen Stromkreis."
+    },
+    {
+        topic: "elec",
+        q: "In einer Schaltskizze siehst du einen Kreis mit einem Kreuz darin (⊗). Welches Bauteil ist damit gemeint?",
+        options: ["Eine Batterie", "Ein geschlossener Schalter", "Eine Glühlampe", "Ein Elektromotor"],
+        correct: 2,
+        feedback: "Richtig! Das Schaltzeichen für eine Glühlampe ist ein Kreis mit einem Kreuz."
+    },
+    {
+        topic: "elec",
+        q: "Ein Schüler baut einen Stromkreis auf, aber die Lampe leuchtet nicht. Woran könnte das liegen?",
+        visual: `<svg viewBox="0 0 280 120" width="250"><rect x="20" y="20" width="240" height="80" fill="none" stroke="#1e293b" stroke-width="2"/><rect x="15" y="45" width="10" height="30" fill="#fff"/><line x1="10" y1="50" x2="30" y2="50" stroke="#1e293b" stroke-width="2"/><line x1="14" y1="65" x2="26" y2="65" stroke="#1e293b" stroke-width="4"/><circle cx="260" cy="60" r="14" fill="#fff" stroke="#1e293b" stroke-width="2"/><line x1="250" y1="50" x2="270" y2="70" stroke="#1e293b" stroke-width="2"/><line x1="270" y1="50" x2="250" y2="70" stroke="#1e293b" stroke-width="2"/><line x1="140" y1="20" x2="140" y2="100" stroke="#dc2626" stroke-width="3"/><text x="145" y="65" fill="#dc2626" font-size="11" font-weight="bold">Kabel</text></svg>`,
+        options: [
+            "Das rote Kabel in der Mitte verursacht einen Kurzschluss, sodass der Strom an der Lampe vorbei fließt.",
+            "Die Kabel wurden mit Lineal gezeichnet.",
+            "Die Batterie hat einen Plus- und einen Minuspol.",
+            "Die Lampe ist zu groß."
+        ],
+        correct: 0,
+        feedback: "Sehr gut erkannt! Das Kabel in der Mitte überbrückt die Lampe (Kurzschluss). Der Strom nimmt den Weg des geringsten Widerstands und fließt nicht durch die Lampe."
+    },
+    {
+        topic: "elec",
+        q: "Welcher dieser Gegenstände leitet den elektrischen Strom NICHT (ist ein Isolator)?",
+        options: ["Ein Kupferkabel", "Ein Eisennagel", "Eine Bleistiftmine aus Graphit", "Ein Plastiklineal"],
+        correct: 3,
+        feedback: "Richtig! Plastik (Kunststoff) ist ein Isolator. Metalle und Graphit dagegen leiten den Strom."
+    },
+    {
+        topic: "elec",
+        q: "Wie sieht das Schaltzeichen für eine Batterie (Spannungsquelle) aus?",
+        options: [
+            "Ein Kreis mit einem M darin.",
+            "Ein langer dünner Strich (+) und parallel daneben ein kurzer dicker Strich (−).",
+            "Ein Viereck mit zwei Punkten.",
+            "Eine Wellenlinie."
+        ],
+        correct: 1,
+        feedback: "Richtig! Der lange dünne Strich steht für den Pluspol, der kurze dicke Strich für den Minuspol."
+    },
+    {
+        topic: "elec",
+        q: "Du möchtest eine Glühlampe direkt mit zwei Kabeln an eine Flachbatterie anschließen. Wo müssen die Kabel an der Glühlampe berühren?",
+        options: [
+            "Beide Kabel müssen an das Glaskolben-Glas gehalten werden.",
+            "Beide Kabel müssen an das Metallgewinde gehalten werden.",
+            "Ein Kabel an das Metallgewinde und das andere Kabel an den unteren Fußkontakt.",
+            "Ein Kabel ans Gewinde, das andere in die Luft."
+        ],
+        correct: 2,
+        feedback: "Genau! Der Strom fließt über das Gewinde durch den Glühdraht zum Fußkontakt (oder umgekehrt). Sind beide Kabel am Gewinde, fließt kein Strom durch den Glühdraht."
+    }
+];
+
+// --- STATE & INITIALIZATION ---
+let checkedState = JSON.parse(localStorage.getItem('physik5_checklist') || '{}');
+let currentCardList = [...flashcardsData];
+let currentCardIndex = 0;
+
+let mag1Flipped = false; // false: N-S, true: S-N
+let mag2Flipped = false; // false: N-S, true: S-N
+
+let switchClosed = false;
+let currentMaterial = { name: 'Luft', conductive: false };
+
+let activeQuizList = [];
+let quizIdx = 0;
+let quizScore = 0;
+let quizAnswered = false;
+
+// --- TAB NAVIGATION ---
+function switchTab(tabName) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('sec-' + tabName).classList.add('active');
+    event.currentTarget.classList.add('active');
+}
+
+// --- CHECKLIST LOGIC ---
+function renderChecklist() {
+    const magContainer = document.getElementById('checklist-magnetismus');
+    const elecContainer = document.getElementById('checklist-elektrizitaet');
+
+    checklistData.forEach(item => {
+        const isChecked = !!checkedState[item.id];
+        const div = document.createElement('div');
+        div.className = 'checklist-item' + (isChecked ? ' checked' : '');
+        div.id = 'item-' + item.id;
+
+        div.innerHTML = `
+            <div class="checklist-row" onclick="toggleCheck('${item.id}', event)">
+                <input type="checkbox" id="cb-${item.id}" ${isChecked ? 'checked' : ''} onclick="event.stopPropagation(); toggleCheck('${item.id}', event)">
+                <div class="checklist-text">${item.text}</div>
+                <button class="explain-btn" onclick="event.stopPropagation(); toggleExplain('${item.id}')">💡 Erklärung</button>
+            </div>
+            <div class="explanation-box" id="exp-${item.id}">
+                ${item.explanation}
+            </div>
+        `;
+
+        if (item.topic === 'mag') magContainer.appendChild(div);
+        else elecContainer.appendChild(div);
+    });
+    updateProgress();
+}
+
+function toggleCheck(id, e) {
+    const cb = document.getElementById('cb-' + id);
+    if (e.target !== cb) {
+        cb.checked = !cb.checked;
+    }
+    checkedState[id] = cb.checked;
+    localStorage.setItem('physik5_checklist', JSON.stringify(checkedState));
+
+    const itemDiv = document.getElementById('item-' + id);
+    if (cb.checked) itemDiv.classList.add('checked');
+    else itemDiv.classList.remove('checked');
+
+    updateProgress();
+}
+
+function toggleExplain(id) {
+    const box = document.getElementById('exp-' + id);
+    box.classList.toggle('open');
+}
+
+function updateProgress() {
+    const total = checklistData.length;
+    const done = checklistData.filter(i => checkedState[i.id]).length;
+    const pct = Math.round((done / total) * 100);
+    document.getElementById('progress-text').textContent = `${done} von ${total} abgehakt (${pct}%)`;
+    document.getElementById('progress-fill').style.width = pct + '%';
+}
+
+// --- FLASHCARDS LOGIC ---
+function filterCards(filter) {
+    document.querySelectorAll('[id^="fc-filter-"]').forEach(b => {
+        b.classList.remove('btn');
+        b.classList.add('btn-outline');
+    });
+    const activeBtn = document.getElementById('fc-filter-' + filter);
+    activeBtn.classList.remove('btn-outline');
+    activeBtn.classList.add('btn');
+
+    if (filter === 'all') currentCardList = [...flashcardsData];
+    else currentCardList = flashcardsData.filter(c => c.topic === filter);
+
+    currentCardIndex = 0;
+    renderCard();
+}
+
+function renderCard() {
+    const cardEl = document.getElementById('flashcard');
+    cardEl.classList.remove('flipped');
+    const card = currentCardList[currentCardIndex];
+
+    const tag = document.getElementById('fc-tag');
+    if (card.topic === 'mag') {
+        tag.textContent = '🧲 Magnetismus';
+        tag.style.background = '#fee2e2';
+        tag.style.color = '#b91c1c';
+    } else {
+        tag.textContent = '⚡ Elektrizität';
+        tag.style.background = '#fef9c3';
+        tag.style.color = '#a16207';
+    }
+
+    document.getElementById('fc-question').textContent = card.q;
+    document.getElementById('fc-answer').textContent = card.a;
+    document.getElementById('fc-counter').textContent = `${currentCardIndex + 1} / ${currentCardList.length}`;
+}
+
+function flipCard() {
+    document.getElementById('flashcard').classList.toggle('flipped');
+}
+
+function nextCard() {
+    currentCardIndex = (currentCardIndex + 1) % currentCardList.length;
+    renderCard();
+}
+
+function prevCard() {
+    currentCardIndex = (currentCardIndex - 1 + currentCardList.length) % currentCardList.length;
+    renderCard();
+}
+
+// --- LAB 1: MAGNETS ---
+function flipMagnet(num) {
+    if (num === 1) mag1Flipped = !mag1Flipped;
+    if (num === 2) mag2Flipped = !mag2Flipped;
+
+    const m1 = document.getElementById('mag1');
+    const m2 = document.getElementById('mag2');
+
+    m1.innerHTML = mag1Flipped
+        ? '<div class="pole-s">S</div><div class="pole-n">N</div>'
+        : '<div class="pole-n">N</div><div class="pole-s">S</div>';
+
+    m2.innerHTML = mag2Flipped
+        ? '<div class="pole-s">S</div><div class="pole-n">N</div>'
+        : '<div class="pole-n">N</div><div class="pole-s">S</div>';
+
+    const innerLeft = mag1Flipped ? 'N' : 'S';
+    const innerRight = mag2Flipped ? 'S' : 'N';
+    const status = document.getElementById('mag-status');
+
+    if (innerLeft !== innerRight) {
+        // Attract
+        m1.style.transform = 'translateX(12px)';
+        m2.style.transform = 'translateX(-12px)';
+        status.style.background = '#dcfce7';
+        status.style.color = '#166534';
+        status.textContent = `${innerLeft === 'N' ? 'Nordpol' : 'Südpol'} trifft auf ${innerRight === 'N' ? 'Nordpol' : 'Südpol'} → Ungleichnamige Pole ziehen sich an!`;
+    } else {
+        // Repel
+        m1.style.transform = 'translateX(-22px)';
+        m2.style.transform = 'translateX(22px)';
+        status.style.background = '#fee2e2';
+        status.style.color = '#991b1b';
+        status.textContent = `${innerLeft === 'N' ? 'Nordpol' : 'Südpol'} trifft auf ${innerRight === 'N' ? 'Nordpol' : 'Südpol'} → Gleichnamige Pole stoßen sich ab!`;
+    }
+}
+
+// --- LAB 2: ELEMENTARY MAGNETS ---
+function initElemGrid() {
+    const grid = document.getElementById('elem-grid');
+    grid.innerHTML = '';
+    for (let i = 0; i < 24; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'elem-compass';
+        const needle = document.createElement('div');
+        needle.className = 'elem-needle';
+        const randDeg = Math.floor(Math.random() * 360);
+        needle.style.transform = `rotate(${randDeg}deg)`;
+        cell.appendChild(needle);
+        grid.appendChild(cell);
+    }
+}
+
+function magnetizeElem() {
+    document.querySelectorAll('.elem-needle').forEach(n => {
+        n.style.transform = 'rotate(0deg)';
+    });
+    const status = document.getElementById('elem-status');
+    status.style.background = '#dcfce7';
+    status.style.color = '#166534';
+    status.textContent = 'Zustand: Magnetisiert! Alle Elementarmagnete zeigen geordnet in dieselbe Richtung (links Grün = Südpol, rechts Rot = Nordpol).';
+}
+
+function demagnetizeElem() {
+    document.querySelectorAll('.elem-needle').forEach(n => {
+        const randDeg = Math.floor(Math.random() * 360);
+        n.style.transform = `rotate(${randDeg}deg)`;
+    });
+    const status = document.getElementById('elem-status');
+    status.style.background = '#e2e8f0';
+    status.style.color = '#334155';
+    status.textContent = 'Zustand: Unmagnetisch (Elementarmagnete sind ungeordnet, Wirkung hebt sich auf)';
+}
+
+// --- LAB 3: CIRCUIT ---
+function toggleSwitch() {
+    switchClosed = !switchClosed;
+    updateCircuit();
+}
+
+function setMaterial(name, conductive) {
+    currentMaterial = { name, conductive };
+    updateCircuit();
+}
+
+function updateCircuit() {
+    const blade = document.getElementById('switch-blade');
+    const switchBtn = document.getElementById('toggle-switch-btn');
+    const matBox = document.getElementById('test-material-box');
+    const matLabel = document.getElementById('test-material-label');
+    const lampGlow = document.getElementById('lamp-glow');
+    const status = document.getElementById('circuit-status');
+
+    if (switchClosed) {
+        blade.setAttribute('x2', '240');
+        blade.setAttribute('y2', '60');
+        switchBtn.textContent = '🔌 Schalter öffnen';
+    } else {
+        blade.setAttribute('x2', '235');
+        blade.setAttribute('y2', '35');
+        switchBtn.textContent = '🔌 Schalter schließen';
+    }
+
+    matLabel.textContent = currentMaterial.name;
+    matBox.setAttribute('fill', currentMaterial.conductive ? '#0284c7' : '#475569');
+
+    if (switchClosed && currentMaterial.conductive) {
+        lampGlow.setAttribute('fill', 'rgba(250, 204, 21, 0.75)');
+        status.style.background = '#dcfce7';
+        status.style.color = '#166534';
+        status.textContent = `💡 Die Lampe leuchtet! Der Schalter ist geschlossen und „${currentMaterial.name}“ leitet den Strom.`;
+    } else if (!switchClosed) {
+        lampGlow.setAttribute('fill', 'rgba(250, 204, 21, 0)');
+        status.style.background = '#fee2e2';
+        status.style.color = '#991b1b';
+        status.textContent = 'Lampe aus: Der Schalter ist offen – der Stromkreis ist unterbrochen.';
+    } else {
+        lampGlow.setAttribute('fill', 'rgba(250, 204, 21, 0)');
+        status.style.background = '#fee2e2';
+        status.style.color = '#991b1b';
+        status.textContent = `Lampe aus: „${currentMaterial.name}“ ist ein Isolator (Nichtleiter) und unterbricht den Stromkreis.`;
+    }
+}
+
+// --- QUIZ LOGIC ---
+function startQuiz() {
+    const topic = document.getElementById('quiz-topic').value;
+    let pool = topic === 'all' ? [...quizQuestions] : quizQuestions.filter(q => q.topic === topic);
+    // Shuffle
+    pool.sort(() => Math.random() - 0.5);
+    activeQuizList = pool;
+    quizIdx = 0;
+    quizScore = 0;
+    updateLiveScore();
+    renderQuizQuestion();
+}
+
+function updateLiveScore() {
+    document.getElementById('quiz-score-live').textContent = `Punkte: ${quizScore} / ${activeQuizList.length}`;
+}
+
+function renderQuizQuestion() {
+    const area = document.getElementById('quiz-area');
+    if (quizIdx >= activeQuizList.length) {
+        const pct = Math.round((quizScore / activeQuizList.length) * 100);
+        let msg = "Super gemacht! Du bist bestens auf die Klassenarbeit vorbereitet! 🌟";
+        if (pct < 80) msg = "Schon ganz gut! Schau dir die gelben/roten Themen noch einmal in der Checkliste an. 👍";
+        if (pct < 50) msg = "Übe noch ein bisschen mit den Lernkarten und dem Labor – du schaffst das! 💪";
+
+        area.innerHTML = `
+            <div class="score-screen">
+                <div class="score-circle">${pct}%<span>${quizScore} von ${activeQuizList.length}</span></div>
+                <h2 style="margin-bottom: 0.5rem;">Test abgeschlossen!</h2>
+                <p style="margin-bottom: 1.5rem; color: var(--text-muted);">${msg}</p>
+                <button class="btn" onclick="startQuiz()">🔄 Test neu starten</button>
+            </div>
+        `;
+        return;
+    }
+
+    quizAnswered = false;
+    const item = activeQuizList[quizIdx];
+    const badge = item.topic === 'mag'
+        ? '<span class="badge-mag">Magnetismus</span>'
+        : '<span class="badge-elec">Elektrizität</span>';
+
+    let visualHtml = item.visual ? `<div class="quiz-visual">${item.visual}</div>` : '';
+
+    let optionsHtml = item.options.map((opt, i) => `
+        <button class="option-btn" id="opt-${i}" onclick="selectAnswer(${i})">${opt}</button>
+    `).join('');
+
+    area.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+            ${badge}
+            <span style="font-size:0.85rem; color:var(--text-muted); font-weight:600;">Frage ${quizIdx + 1} von ${activeQuizList.length}</span>
+        </div>
+        <div class="quiz-question-text">${item.q}</div>
+        ${visualHtml}
+        <div class="options-list">${optionsHtml}</div>
+        <div class="quiz-feedback" id="quiz-feedback"></div>
+        <div style="margin-top: 1.25rem; text-align: right;">
+            <button class="btn" id="next-q-btn" style="display:none;" onclick="nextQuestion()">Nächste Frage ➡️</button>
+        </div>
+    `;
+}
+
+function selectAnswer(chosenIdx) {
+    if (quizAnswered) return;
+    quizAnswered = true;
+
+    const item = activeQuizList[quizIdx];
+    const fb = document.getElementById('quiz-feedback');
+    const btns = document.querySelectorAll('.option-btn');
+
+    btns.forEach((b, i) => {
+        b.disabled = true;
+        if (i === item.correct) b.classList.add('correct');
+        if (i === chosenIdx && i !== item.correct) b.classList.add('wrong');
+    });
+
+    if (chosenIdx === item.correct) {
+        quizScore++;
+        updateLiveScore();
+        fb.style.background = '#dcfce7';
+        fb.style.color = '#14532d';
+    } else {
+        fb.style.background = '#fee2e2';
+        fb.style.color = '#7f1d1d';
+    }
+
+    fb.innerHTML = item.feedback;
+    fb.classList.add('show');
+    document.getElementById('next-q-btn').style.display = 'inline-block';
+}
+
+function nextQuestion() {
+    quizIdx++;
+    renderQuizQuestion();
+}
+
+// Start App
+renderChecklist();
+filterCards('all');
+initElemGrid();
+startQuiz();
+</script>
+</body>
+</html>
