@@ -1,0 +1,1559 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bio-Entdeckerwelt – Klasse 5: Kennzeichen des Lebendigen & Hund</title>
+  <!-- Tailwind CSS für modernes, responsives Layout -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Grundlegende Typografie und Farbgebung */
+    @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+
+    body {
+      font-family: 'Nunito', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #f0f9ff;
+      color: #1e293b;
+      overflow-x: hidden;
+    }
+
+    /* Sanfte Animationen für Tab-Wechsel & Karten */
+    .fade-in {
+      animation: fadeIn 0.35s ease-out forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Sauerklee SVG Animationen */
+    .sauerklee-part {
+      transition: transform 0.9s cubic-bezier(0.34, 1.56, 0.64, 1), fill 0.8s ease;
+    }
+
+    /* Hundeskelett Interaktive Punkte */
+    .bone-hotspot {
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .bone-hotspot:hover circle {
+      r: 13;
+      fill: #f59e0b;
+    }
+    .bone-active circle {
+      fill: #10b981 !important;
+      stroke: #ffffff;
+      stroke-width: 3;
+      r: 13;
+    }
+
+    /* Custom Scrollbar für Navigation auf kleinen Bildschirmen */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* Lückentext Inputs */
+    .gap-input {
+      border-bottom: 2px solid #0284c7;
+      background-color: #f8fafc;
+      padding: 2px 8px;
+      border-radius: 6px 6px 0 0;
+      font-weight: 700;
+      color: #0369a1;
+      transition: all 0.2s;
+    }
+    .gap-input:focus {
+      outline: none;
+      background-color: #e0f2fe;
+      border-color: #0369a1;
+    }
+    .gap-correct {
+      background-color: #dcfce7 !important;
+      border-color: #16a34a !important;
+      color: #15803d !important;
+    }
+    .gap-wrong {
+      background-color: #fee2e2 !important;
+      border-color: #dc2626 !important;
+      color: #b91c1c !important;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- Top Header mit Fortschritt & Sternen -->
+  <header class="bg-gradient-to-r from-emerald-600 via-teal-600 to-sky-600 text-white shadow-lg sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="bg-white/20 p-2 rounded-2xl backdrop-blur-sm text-2xl">🔬</div>
+        <div>
+          <h1 class="text-lg sm:text-xl font-extrabold tracking-tight leading-tight">Bio-Entdeckerwelt • Klasse 5</h1>
+          <p class="text-xs sm:text-sm text-emerald-100 font-medium">Kennzeichen des Lebendigen &amp; Der Hund</p>
+        </div>
+      </div>
+
+      <!-- Punkte / Sterne Anzeige -->
+      <div class="flex items-center gap-4 bg-white/15 px-4 py-2 rounded-2xl backdrop-blur-sm border border-white/20">
+        <div class="flex items-center gap-1.5" title="Gesammelte Bio-Sterne">
+          <span class="text-xl">⭐</span>
+          <span id="star-count" class="font-extrabold text-lg">0</span>
+          <span class="text-xs text-emerald-100">/ 30</span>
+        </div>
+        <div class="w-24 sm:w-32 bg-black/20 h-3 rounded-full overflow-hidden">
+          <div id="progress-bar" class="bg-amber-400 h-full transition-all duration-500 rounded-full" style="width: 0%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modul-Navigation -->
+    <nav class="bg-white/10 border-t border-white/15">
+      <div class="max-w-6xl mx-auto px-2 py-2 flex gap-2 overflow-x-auto no-scrollbar" id="nav-tabs">
+        <button onclick="switchTab(0)" id="tab-btn-0" class="tab-btn flex-shrink-0 px-4 py-2 rounded-xl font-bold text-sm transition-all bg-white text-teal-800 shadow-sm flex items-center gap-2">
+          <span>🌱</span> 1. Grundlagen &amp; Kennzeichen
+        </button>
+        <button onclick="switchTab(1)" id="tab-btn-1" class="tab-btn flex-shrink-0 px-4 py-2 rounded-xl font-bold text-sm transition-all text-white hover:bg-white/20 flex items-center gap-2">
+          <span>🍀</span> 2. Der Sauerklee
+        </button>
+        <button onclick="switchTab(2)" id="tab-btn-2" class="tab-btn flex-shrink-0 px-4 py-2 rounded-xl font-bold text-sm transition-all text-white hover:bg-white/20 flex items-center gap-2">
+          <span>🦴</span> 3. Skelett des Hundes
+        </button>
+        <button onclick="switchTab(3)" id="tab-btn-3" class="tab-btn flex-shrink-0 px-4 py-2 rounded-xl font-bold text-sm transition-all text-white hover:bg-white/20 flex items-center gap-2">
+          <span>🐕</span> 4. Hundehaltung
+        </button>
+        <button onclick="switchTab(4)" id="tab-btn-4" class="tab-btn flex-shrink-0 px-4 py-2 rounded-xl font-bold text-sm transition-all text-white hover:bg-white/20 flex items-center gap-2">
+          <span>🏆</span> 5. Probe-Klassenarbeit
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Hauptbereich -->
+  <main class="flex-grow max-w-6xl w-full mx-auto px-4 py-6 sm:py-8">
+
+    <!-- =================================================================== -->
+    <!-- MODUL 1: GRUNDLAGEN DER BIOLOGIE & KENNZEICHEN DES LEBENDIGEN       -->
+    <!-- =================================================================== -->
+    <section id="module-0" class="module-section fade-in space-y-6">
+      <!-- Intro Banner -->
+      <div class="bg-white rounded-3xl p-6 shadow-sm border border-sky-100">
+        <div class="flex flex-col md:flex-row gap-6 items-start md:items-center justify-between">
+          <div>
+            <span class="inline-block px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-xs font-extrabold uppercase tracking-wider mb-2">Modul 1 • Basiswissen</span>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-800">Was ist Biologie und was lebt?</h2>
+            <p class="text-slate-600 mt-2 leading-relaxed">
+              Die <strong>Biologie</strong> ist neben der <strong>Physik</strong> und der <strong>Chemie</strong> eine der drei großen <strong>Naturwissenschaften</strong>. Das Wort stammt aus dem Griechischen (<em>bios</em> = Leben, <em>logos</em> = Lehre) und bedeutet übersetzt <strong>„Lehre vom Leben“</strong>. Sie erforscht die <strong>lebende Natur</strong> – dazu gehören <strong>Tiere, Pflanzen und Pilze</strong> in ihren jeweiligen Lebensbedingungen.
+            </p>
+          </div>
+          <div class="bg-sky-50 border border-sky-200 rounded-2xl p-4 flex-shrink-0 w-full md:w-64">
+            <h3 class="font-extrabold text-sky-900 text-sm mb-2">🔍 Merke dir für die Arbeit:</h3>
+            <ul class="text-xs sm:text-sm text-sky-800 space-y-1.5 font-medium">
+              <li>✅ Naturwissenschaft (wie Physik &amp; Chemie)</li>
+              <li>✅ „Lehre vom Leben“</li>
+              <li>✅ Lebende Natur: Tiere, Pflanzen, Pilze</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Die 5 Kennzeichen des Lebendigen (Interaktive Karten) -->
+      <div class="bg-white rounded-3xl p-6 shadow-sm border border-sky-100">
+        <h3 class="text-xl font-extrabold text-slate-800 mb-1">Die 5 Kennzeichen des Lebendigen</h3>
+        <p class="text-sm text-slate-500 mb-5">Klicke auf jede Karte, um ein Beispiel zu entdecken! Nur wenn <strong>alle 5 Kennzeichen</strong> zutreffen, ist etwas ein Lebewesen.</p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4" id="characteristics-grid">
+          <!-- Karten werden per JS befüllt -->
+        </div>
+      </div>
+
+      <!-- Interaktiver Lückentext (Originalgetreu zur Klassenarbeit Aufgabe 1) -->
+      <div class="bg-white rounded-3xl p-6 shadow-sm border-2 border-teal-200">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+          <div>
+            <span class="px-3 py-1 bg-teal-100 text-teal-800 rounded-full text-xs font-extrabold">Übung zu Aufgabe 1</span>
+            <h3 class="text-xl font-extrabold text-slate-800 mt-1">Lückentext-Trainer: Biologie &amp; Kennzeichen</h3>
+          </div>
+          <button onclick="fillClozeHint()" class="px-3 py-1.5 bg-amber-100 hover:bg-amber-200 text-amber-900 rounded-xl text-xs font-bold transition">
+            💡 Wortbank anzeigen / ausblenden
+          </button>
+        </div>
+
+        <!-- Wortbank -->
+        <div id="word-bank" class="hidden mb-4 p-3 bg-amber-50 border border-amber-200 rounded-2xl">
+          <p class="text-xs font-bold text-amber-800 mb-2">Diese Wörter gehören in die Lücken (in gemischter Reihenfolge):</p>
+          <div class="flex flex-wrap gap-2 text-xs font-bold text-slate-700">
+            <span class="px-2.5 py-1 bg-white rounded-lg border border-amber-300 shadow-sm">Naturwissenschaft</span>
+            <span class="px-2.5 py-1 bg-white rounded-lg border border-amber-300 shadow-sm">lebenden</span>
+            <span class="px-2.5 py-1 bg-white rounded-lg border border-amber-300 shadow-sm">Tiere</span>
+            <span class="px-2.5 py-1 bg-white rounded-lg border border-amber-300 shadow-sm">Pflanzen</span>
+            <span class="px-2.5 py-1 bg-white rounded-lg border border-amber-300 shadow-sm">Pilze</span>
+            <span class="px-2.5 py-1 bg-white rounded-lg border border-amber-300 shadow-sm">Lehre vom Leben</span>
+            <span class="px-2.5 py-1 bg-white rounded-lg border border-amber-300 shadow-sm">eigener Kraft bewegt</span>
+            <span class="px-2.5 py-1 bg-white rounded-lg border border-amber-300 shadow-sm">wächst</span>
+            <span class="px-2.5 py-1 bg-white rounded-lg border border-amber-300 shadow-sm">Stoffwechsel</span>
+            <span class="px-2.5 py-1 bg-white rounded-lg border border-amber-300 shadow-sm">fortpflanzt</span>
+            <span class="px-2.5 py-1 bg-white rounded-lg border border-amber-300 shadow-sm">reizbar</span>
+            <span class="px-2.5 py-1 bg-white rounded-lg border border-amber-300 shadow-sm">Kennzeichen des Lebendigen</span>
+          </div>
+        </div>
+
+        <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 text-base sm:text-lg leading-loose text-slate-800">
+          Die Biologie ist wie die Physik und die Chemie eine 
+          <input type="text" data-answer="Naturwissenschaft" class="gap-input w-44 text-center" placeholder="1. Lücke">. 
+          Sie beschäftigt sich mit der 
+          <input type="text" data-answer="lebenden" class="gap-input w-32 text-center" placeholder="2. Lücke"> 
+          Natur. Dazu gehören 
+          <input type="text" data-answer="Tiere" class="gap-input w-28 text-center" placeholder="3. Lücke">, 
+          <input type="text" data-answer="Pflanzen" class="gap-input w-32 text-center" placeholder="4. Lücke"> 
+          und 
+          <input type="text" data-answer="Pilze" class="gap-input w-28 text-center" placeholder="5. Lücke"> 
+          in ihren jeweiligen Lebensbedingungen. Biologie bedeutet „<input type="text" data-answer="Lehre vom Leben" class="gap-input w-44 text-center" placeholder="6. Lücke">“.
+          <br class="my-2">
+          Man bezeichnet etwas als lebendig, wenn es sich aus 
+          <input type="text" data-answer="eigener Kraft bewegt" class="gap-input w-48 text-center" placeholder="7. Lücke">, 
+          es 
+          <input type="text" data-answer="wächst" class="gap-input w-28 text-center" placeholder="8. Lücke">, 
+          es einen 
+          <input type="text" data-answer="Stoffwechsel" class="gap-input w-36 text-center" placeholder="9. Lücke"> 
+          hat, es sich 
+          <input type="text" data-answer="fortpflanzt" class="gap-input w-32 text-center" placeholder="10. Lücke"> 
+          und es 
+          <input type="text" data-answer="reizbar" class="gap-input w-28 text-center" placeholder="11. Lücke"> 
+          ist. Diese Eigenschaften nennt man 
+          <input type="text" data-answer="Kennzeichen des Lebendigen" class="gap-input w-56 text-center" placeholder="12. Lücke">.
+        </div>
+
+        <div class="mt-4 flex flex-wrap items-center gap-3">
+          <button onclick="checkClozeText()" class="px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl shadow transition">
+            ✅ Lückentext überprüfen
+          </button>
+          <button onclick="resetClozeText()" class="px-4 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl transition">
+            🔄 Zurücksetzen
+          </button>
+          <span id="cloze-feedback" class="text-sm font-bold"></span>
+        </div>
+      </div>
+
+      <div class="flex justify-end">
+        <button onclick="switchTab(1)" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-2xl shadow-md transition flex items-center gap-2">
+          Weiter zu Modul 2: Der Sauerklee <span>➡️</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- MODUL 2: KENNZEICHEN DER LEBEWESEN AM BEISPIEL SAUERKLEE            -->
+    <!-- =================================================================== -->
+    <section id="module-1" class="module-section hidden fade-in space-y-6">
+      <div class="bg-white rounded-3xl p-6 shadow-sm border border-sky-100">
+        <span class="inline-block px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-xs font-extrabold uppercase tracking-wider mb-2">Modul 2 • Beobachtung &amp; Erklärung</span>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-800">Der Sauerklee – Auch Pflanzen bewegen sich!</h2>
+        <p class="text-slate-600 mt-2">
+          Viele denken, Pflanzen würden sich überhaupt nicht bewegen. Doch der <strong>Waldsauerklee</strong> zeigt eindrucksvoll, wie Pflanzen auf ihre Umwelt reagieren! Wechsle unten zwischen <strong>Tag (Sonne)</strong> und <strong>Nacht (Dunkelheit / Kälte)</strong> und beobachte genau, was passiert.
+        </p>
+
+        <!-- Interaktive SVG-Simulation: Sauerklee Tag vs. Nacht -->
+        <div class="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+          <!-- SVG Bühne -->
+          <div class="lg:col-span-7 rounded-3xl overflow-hidden border-2 border-slate-200 shadow-inner relative transition-colors duration-700" id="sauerklee-stage" style="background: linear-gradient(180deg, #bae6fd 0%, #e0f2fe 70%, #dcfce7 70%, #bbf7d0 100%);">
+            
+            <!-- Status Badge oben links -->
+            <div class="absolute top-3 left-3 z-10 px-3 py-1.5 rounded-xl font-extrabold text-xs shadow bg-white/90 text-slate-800 flex items-center gap-2" id="sauerklee-time-badge">
+              <span>☀️</span> Tag: Helles Sonnenlicht &amp; Wärme
+            </div>
+
+            <!-- Inline SVG des Sauerklees -->
+            <svg viewBox="0 0 500 340" class="w-full h-auto block" id="sauerklee-svg">
+              <!-- Sonne / Mond -->
+              <g id="celestial-sun" class="sauerklee-part" style="transform: translate(0px, 0px); opacity: 1;">
+                <circle cx="420" cy="60" r="32" fill="#facc15" />
+                <g stroke="#facc15" stroke-width="4" stroke-linecap="round">
+                  <line x1="420" y1="15" x2="420" y2="22" />
+                  <line x1="420" y1="98" x2="420" y2="105" />
+                  <line x1="375" y1="60" x2="382" y2="60" />
+                  <line x1="458" y1="60" x2="465" y2="60" />
+                  <line x1="388" y1="28" x2="393" y2="33" />
+                  <line x1="447" y1="87" x2="452" y2="92" />
+                  <line x1="388" y1="92" x2="393" y2="87" />
+                  <line x1="447" y1="33" x2="452" y2="28" />
+                </g>
+              </g>
+
+              <g id="celestial-moon" class="sauerklee-part" style="transform: translate(0px, -40px); opacity: 0;">
+                <path d="M425 32 A26 26 0 1 0 448 75 A20 20 0 1 1 425 32 Z" fill="#fef08a" />
+                <circle cx="370" cy="40" r="2" fill="#ffffff" />
+                <circle cx="350" cy="70" r="2.5" fill="#ffffff" />
+                <circle cx="390" cy="85" r="1.5" fill="#ffffff" />
+              </g>
+
+              <!-- Erdboden & Wurzelstock (Rhizom) -->
+              <ellipse cx="250" cy="295" rx="190" ry="18" fill="#86efac" opacity="0.6" />
+              <g id="roots" stroke="#78350f" stroke-width="2.5" fill="none" stroke-linecap="round">
+                <path d="M235 285 Q250 280 275 292" stroke-width="6" stroke="#92400e" />
+                <path d="M240 288 Q230 305 220 315" />
+                <path d="M250 288 Q248 310 245 322" />
+                <path d="M262 290 Q268 308 278 318" />
+                <path d="M270 292 Q285 305 295 312" />
+              </g>
+
+              <!-- Stängel -->
+              <g stroke="#15803d" stroke-width="3.5" fill="none" stroke-linecap="round">
+                <!-- Stängel zur Blüte -->
+                <path d="M250 283 Q252 180 248 95" />
+                <!-- Stängel Blatt 1 (links) -->
+                <path d="M246 283 Q200 230 165 195" />
+                <!-- Stängel Blatt 2 (Mitte oben) -->
+                <path d="M249 283 Q235 210 225 160" />
+                <!-- Stängel Blatt 3 (rechts) -->
+                <path d="M254 283 Q295 235 325 205" />
+              </g>
+
+              <!-- BLÜTE (oben bei 248, 95) -->
+              <g id="flower-group" class="sauerklee-part" style="transform-origin: 248px 95px; transform: rotate(0deg);">
+                <!-- Blütenstiel-Bogen -->
+                <path d="M248 95 Q248 75 248 65" stroke="#15803d" stroke-width="3" fill="none" />
+                <!-- Geöffnete Blütenblätter (Tag) -->
+                <g id="flower-open" class="sauerklee-part" style="opacity: 1;">
+                  <ellipse cx="248" cy="45" rx="11" ry="18" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+                  <ellipse cx="267" cy="58" rx="11" ry="18" transform="rotate(72 267 58)" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+                  <ellipse cx="260" cy="80" rx="11" ry="18" transform="rotate(144 260 80)" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+                  <ellipse cx="236" cy="80" rx="11" ry="18" transform="rotate(216 236 80)" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+                  <ellipse cx="229" cy="58" rx="11" ry="18" transform="rotate(288 229 58)" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+                  <!-- Zarte Adern & Gelbes Zentrum -->
+                  <circle cx="248" cy="64" r="7" fill="#fde047" />
+                  <path d="M248 57 L248 42 M254 61 L268 55 M242 61 L228 55" stroke="#c084fc" stroke-width="1" />
+                </g>
+                <!-- Geschlossene, geneigte Blüte (Nacht) -->
+                <g id="flower-closed" class="sauerklee-part" style="opacity: 0;">
+                  <path d="M248 68 C232 75 222 92 225 106 C235 102 244 90 248 68 Z" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5" />
+                  <path d="M248 68 C242 82 238 98 244 110 C252 100 253 84 248 68 Z" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5" />
+                  <path d="M248 68 C255 80 258 94 254 104 C248 96 247 82 248 68 Z" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5" />
+                </g>
+              </g>
+
+              <!-- KLEBLATT 1 (Links bei 165, 195) -->
+              <g transform="translate(165, 195)">
+                <!-- Blattteil oben -->
+                <path id="leaf1-top" class="sauerklee-part" d="M0 0 C-14 -18 -8 -36 0 -28 C8 -36 14 -18 0 0 Z" fill="#16a34a" stroke="#14532d" stroke-width="1.5" style="transform-origin: 0px 0px; transform: rotate(0deg) scaleY(1);" />
+                <!-- Blattteil links -->
+                <path id="leaf1-left" class="sauerklee-part" d="M0 0 C-22 -8 -36 6 -24 14 C-28 26 -10 22 0 0 Z" fill="#22c55e" stroke="#14532d" stroke-width="1.5" style="transform-origin: 0px 0px; transform: rotate(0deg);" />
+                <!-- Blattteil rechts -->
+                <path id="leaf1-right" class="sauerklee-part" d="M0 0 C22 -8 36 6 24 14 C28 26 10 22 0 0 Z" fill="#15803d" stroke="#14532d" stroke-width="1.5" style="transform-origin: 0px 0px; transform: rotate(0deg);" />
+              </g>
+
+              <!-- KLEBLATT 2 (Mitte bei 225, 160) -->
+              <g transform="translate(225, 160)">
+                <path id="leaf2-top" class="sauerklee-part" d="M0 0 C-13 -16 -7 -32 0 -25 C7 -32 13 -16 0 0 Z" fill="#16a34a" stroke="#14532d" stroke-width="1.5" style="transform-origin: 0px 0px; transform: rotate(0deg) scaleY(1);" />
+                <path id="leaf2-left" class="sauerklee-part" d="M0 0 C-20 -7 -32 5 -21 12 C-25 23 -9 19 0 0 Z" fill="#22c55e" stroke="#14532d" stroke-width="1.5" style="transform-origin: 0px 0px; transform: rotate(0deg);" />
+                <path id="leaf2-right" class="sauerklee-part" d="M0 0 C20 -7 32 5 21 12 C25 23 9 19 0 0 Z" fill="#15803d" stroke="#14532d" stroke-width="1.5" style="transform-origin: 0px 0px; transform: rotate(0deg);" />
+              </g>
+
+              <!-- KLEBLATT 3 (Rechts bei 325, 205) -->
+              <g transform="translate(325, 205)">
+                <path id="leaf3-top" class="sauerklee-part" d="M0 0 C-14 -18 -8 -36 0 -28 C8 -36 14 -18 0 0 Z" fill="#16a34a" stroke="#14532d" stroke-width="1.5" style="transform-origin: 0px 0px; transform: rotate(0deg) scaleY(1);" />
+                <path id="leaf3-left" class="sauerklee-part" d="M0 0 C-22 -8 -36 6 -24 14 C-28 26 -10 22 0 0 Z" fill="#22c55e" stroke="#14532d" stroke-width="1.5" style="transform-origin: 0px 0px; transform: rotate(0deg);" />
+                <path id="leaf3-right" class="sauerklee-part" d="M0 0 C22 -8 36 6 24 14 C28 26 10 22 0 0 Z" fill="#15803d" stroke="#14532d" stroke-width="1.5" style="transform-origin: 0px 0px; transform: rotate(0deg);" />
+              </g>
+
+              <!-- Beschriftung unten rechts wie im Arbeitsblatt -->
+              <text x="360" y="325" font-family="Nunito, sans-serif" font-weight="800" font-size="18" fill="#1e293b" id="svg-label-sauerklee">Sauerklee</text>
+            </svg>
+          </div>
+
+          <!-- Steuerungs- & Beobachtungsbox -->
+          <div class="lg:col-span-5 space-y-4">
+            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+              <p class="text-sm font-extrabold text-slate-700 mb-3">Tageszeit umschalten &amp; Reaktion beobachten:</p>
+              <div class="grid grid-cols-2 gap-3">
+                <button onclick="setSauerkleeState('day')" id="btn-day" class="py-3 px-4 rounded-xl font-extrabold text-sm bg-amber-400 text-amber-950 shadow-md ring-2 ring-amber-500 transition flex items-center justify-center gap-2">
+                  <span>☀️</span> Tag (Sonne)
+                </button>
+                <button onclick="setSauerkleeState('night')" id="btn-night" class="py-3 px-4 rounded-xl font-extrabold text-sm bg-slate-200 text-slate-700 hover:bg-indigo-900 hover:text-white transition flex items-center justify-center gap-2">
+                  <span>🌙</span> Nacht / Kälte
+                </button>
+              </div>
+            </div>
+
+            <!-- Live-Erklärung was passiert -->
+            <div id="sauerklee-explanation" class="bg-emerald-50 border border-emerald-200 p-4 rounded-2xl space-y-2">
+              <h4 class="font-extrabold text-emerald-900 text-base">☀️ Beobachtung am Tag:</h4>
+              <p class="text-sm text-emerald-800 leading-relaxed">
+                Bei Helligkeit und Wärme sind die <strong>dreiteiligen Blätter waagerecht ausgebreitet</strong>, um möglichst viel Sonnenlicht einzufangen. Auch die weiße <strong>Blüte ist weit geöffnet</strong>.
+              </p>
+            </div>
+
+            <!-- Merksatz zur Aufgabe 2.2 -->
+            <div class="bg-amber-50 border border-amber-200 p-4 rounded-2xl">
+              <h4 class="font-extrabold text-amber-900 text-sm">💡 Wichtig für Aufgabe 2.2:</h4>
+              <p class="text-xs sm:text-sm text-amber-800 mt-1">
+                Hier sind gleich <strong>zwei Kennzeichen</strong> zu erkennen:
+                <br>1. <strong>Reizbarkeit:</strong> Der Sauerklee nimmt den Reiz (Licht/Dunkelheit oder Temperatur) wahr und reagiert darauf.
+                <br>2. <strong>Bewegung aus eigener Kraft:</strong> Er klappt seine Blätter und Blüte selbstständig zusammen und wieder auf.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interaktive Übung zu Aufgabe 2.1 und 2.2 -->
+      <div class="bg-white rounded-3xl p-6 shadow-sm border-2 border-emerald-200 space-y-5">
+        <span class="px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-xs font-extrabold">Übung zu Aufgabe 2.1 &amp; 2.2</span>
+        <h3 class="text-xl font-extrabold text-slate-800">Teste dein Wissen zum Sauerklee!</h3>
+
+        <!-- Frage 2.1 -->
+        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+          <p class="font-bold text-slate-800 mb-3">2.1 Was verändert sich in der Abbildung vom linken Bild (Tag) zum rechten Bild (Nacht)?</p>
+          <div class="space-y-2" id="sauerklee-q1">
+            <label class="flex items-start gap-3 p-3 bg-white rounded-xl border border-slate-200 cursor-pointer hover:border-emerald-400">
+              <input type="radio" name="sk_q1" value="correct" class="mt-1 w-4 h-4 text-emerald-600">
+              <span class="text-sm text-slate-700">Die Blüte schließt sich und neigt sich nach unten; die dreiteiligen Blätter klappen nach unten zusammen.</span>
+            </label>
+            <label class="flex items-start gap-3 p-3 bg-white rounded-xl border border-slate-200 cursor-pointer hover:border-emerald-400">
+              <input type="radio" name="sk_q1" value="wrong1" class="mt-1 w-4 h-4 text-emerald-600">
+              <span class="text-sm text-slate-700">Die Wurzeln wachsen doppelt so lang und die Blätter färben sich rot.</span>
+            </label>
+            <label class="flex items-start gap-3 p-3 bg-white rounded-xl border border-slate-200 cursor-pointer hover:border-emerald-400">
+              <input type="radio" name="sk_q1" value="wrong2" class="mt-1 w-4 h-4 text-emerald-600">
+              <span class="text-sm text-slate-700">Die Pflanze wirft alle Blätter ab und bildet neue Samen.</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Frage 2.2 -->
+        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+          <p class="font-bold text-slate-800 mb-3">2.2 Welches Hauptkennzeichen der Lebewesen wird durch diese Reaktion auf Licht/Dunkelheit gezeigt?</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2" id="sauerklee-q2">
+            <label class="flex items-center gap-3 p-3 bg-white rounded-xl border border-slate-200 cursor-pointer hover:border-emerald-400">
+              <input type="radio" name="sk_q2" value="wrong1" class="w-4 h-4 text-emerald-600">
+              <span class="text-sm font-semibold text-slate-700">Fortpflanzung</span>
+            </label>
+            <label class="flex items-center gap-3 p-3 bg-white rounded-xl border border-slate-200 cursor-pointer hover:border-emerald-400">
+              <input type="radio" name="sk_q2" value="correct" class="w-4 h-4 text-emerald-600">
+              <span class="text-sm font-semibold text-slate-700">Reizbarkeit (und Eigenbewegung)</span>
+            </label>
+            <label class="flex items-center gap-3 p-3 bg-white rounded-xl border border-slate-200 cursor-pointer hover:border-emerald-400">
+              <input type="radio" name="sk_q2" value="wrong2" class="w-4 h-4 text-emerald-600">
+              <span class="text-sm font-semibold text-slate-700">Stoffwechsel</span>
+            </label>
+            <label class="flex items-center gap-3 p-3 bg-white rounded-xl border border-slate-200 cursor-pointer hover:border-emerald-400">
+              <input type="radio" name="sk_q2" value="wrong3" class="w-4 h-4 text-emerald-600">
+              <span class="text-sm font-semibold text-slate-700">Wachstum</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3">
+          <button onclick="checkSauerkleeQuiz()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow transition">
+            ✅ Antworten prüfen
+          </button>
+          <span id="sauerklee-feedback" class="text-sm font-bold"></span>
+        </div>
+      </div>
+
+      <div class="flex justify-between">
+        <button onclick="switchTab(0)" class="px-5 py-3 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-2xl transition">
+          ⬅️ Zurück
+        </button>
+        <button onclick="switchTab(2)" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-2xl shadow-md transition flex items-center gap-2">
+          Weiter zu Modul 3: Skelett des Hundes <span>➡️</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- MODUL 3: DAS SKELETT DES HUNDES (INTERAKTIVE GRAFIK)                -->
+    <!-- =================================================================== -->
+    <section id="module-2" class="module-section hidden fade-in space-y-6">
+      <div class="bg-white rounded-3xl p-6 shadow-sm border border-sky-100">
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+          <div>
+            <span class="inline-block px-3 py-1 bg-sky-100 text-sky-800 rounded-full text-xs font-extrabold uppercase tracking-wider mb-1">Modul 3 • Anatomie</span>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-800">Das Skelett des Hundes</h2>
+          </div>
+
+          <!-- Modus-Umschalter: Entdecken vs. Beschriftungs-Quiz -->
+          <div class="bg-slate-100 p-1.5 rounded-2xl flex gap-1 border border-slate-200">
+            <button onclick="setDogMode('learn')" id="dog-mode-learn" class="px-4 py-2 rounded-xl text-sm font-extrabold bg-sky-600 text-white shadow-sm transition">
+              🔍 1. Entdecken
+            </button>
+            <button onclick="setDogMode('quiz')" id="dog-mode-quiz" class="px-4 py-2 rounded-xl text-sm font-extrabold text-slate-600 hover:text-slate-900 transition">
+              ✏️ 2. Beschriften üben
+            </button>
+          </div>
+        </div>
+
+        <p class="text-slate-600 text-sm sm:text-base mb-4" id="dog-mode-desc">
+          Klicke auf die <strong>8 nummerierten Punkte</strong> im Hundeskelett, um zu erfahren, wie die Knochen heißen und welche Besonderheiten es beim Hund gibt!
+        </p>
+
+        <!-- Interaktive Hundeskelett-Bühne -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+          <!-- SVG Hundeskelett -->
+          <div class="lg:col-span-8 bg-slate-50 rounded-3xl border-2 border-slate-200 p-2 sm:p-4 relative">
+            <svg viewBox="0 0 760 440" class="w-full h-auto block" id="dog-skeleton-svg">
+              <!-- Dezenter Hintergrundraster -->
+              <rect x="0" y="0" width="760" height="440" rx="20" fill="#f8fafc" />
+              <line x1="80" y1="395" x2="680" y2="395" stroke="#cbd5e1" stroke-width="3" stroke-linecap="round" />
+
+              <!-- HUNDSILHOUETTE (hellgrau im Hintergrund wie im Schulbuch) -->
+              <path d="M165 110 
+                       L132 122 Q122 126 125 135 L155 142 L135 146 Q132 152 142 155 L178 154 
+                       Q195 175 215 205 L210 265 L228 315 L228 375 L212 388 L238 390 L244 375 L245 315 L258 275
+                       L262 325 L260 378 L246 390 L270 390 L276 376 L276 320 L282 268
+                       Q340 278 415 262
+                       L435 315 L442 368 L428 388 L452 388 L460 368 L455 315 L472 265
+                       L485 318 L495 368 L480 388 L504 388 L512 368 L502 312 L505 245
+                       Q535 280 562 315 Q568 320 564 310 Q542 265 515 212
+                       Q512 180 485 170
+                       Q410 165 320 165
+                       Q275 162 245 145
+                       L215 102 L204 75 L192 98 L182 78 L175 102 Z" 
+                    fill="#e2e8f0" stroke="#94a3b8" stroke-width="2" stroke-linejoin="round" />
+
+              <!-- SKELETTKNOCHEN (detaillierte Vektorgrafik) -->
+              <g stroke="#334155" stroke-width="1.8" fill="#ffffff" stroke-linejoin="round" stroke-linecap="round">
+                <!-- Schädel & Unterkiefer -->
+                <path d="M132 125 L168 112 L196 106 L204 128 L184 142 L162 136 L132 132 Z" />
+                <circle cx="164" cy="122" r="6" fill="#cbd5e1" /> <!-- Augenhöhle -->
+                <path d="M138 148 L176 146 L192 136 L195 144 L174 153 L138 152 Z" /> <!-- Unterkiefer -->
+
+                <!-- Halswirbelsäule -->
+                <path d="M198 122 L212 134 L224 146 L236 156 L248 164" stroke-width="7" stroke="#cbd5e1" />
+                <path d="M198 122 L212 134 L224 146 L236 156 L248 164" stroke-width="2" stroke-dasharray="5,4" />
+
+                <!-- 2. WIRBELSÄULE (Brust- & Lendenwirbel + Schwanzwirbel) -->
+                <g id="bone-shape-2">
+                  <path d="M250 166 Q335 168 455 175" stroke="#94a3b8" stroke-width="8" fill="none" />
+                  <!-- Dornfortsätze der Wirbel -->
+                  <path d="M256 164 L254 148 M268 164 L267 146 M280 165 L280 148 M292 165 L293 150 M304 166 L306 152 M316 166 L318 154 M328 167 L330 156 M340 168 L342 158 M354 169 L356 159 M368 170 L370 160 M382 171 L384 161 M396 172 L398 162 M410 173 L412 163 M424 174 L426 164 M438 175 L440 165" stroke="#334155" stroke-width="2.5" />
+                  <!-- Schwanzwirbel -->
+                  <path d="M495 186 Q528 235 558 308" stroke="#64748b" stroke-width="3.5" stroke-dasharray="6,3" fill="none" />
+                </g>
+
+                <!-- 4. RIPPEN (Brustkorb) -->
+                <g id="bone-shape-4" fill="none" stroke="#334155" stroke-width="3">
+                  <path d="M262 172 Q250 212 264 246" />
+                  <path d="M274 172 Q262 216 276 252" />
+                  <path d="M286 172 Q275 218 289 255" />
+                  <path d="M298 173 Q288 220 302 256" />
+                  <path d="M310 173 Q302 220 315 254" />
+                  <path d="M322 174 Q316 218 328 250" />
+                  <path d="M334 174 Q330 215 340 245" />
+                  <path d="M346 175 Q344 210 352 238" />
+                  <path d="M358 176 Q358 205 364 230" />
+                  <!-- Brustbein unten -->
+                  <path d="M254 242 Q285 258 325 254" stroke-width="4" stroke="#64748b" />
+                </g>
+
+                <!-- 1. SCHULTERBLATT -->
+                <path id="bone-shape-1" d="M244 162 L264 168 L252 214 L236 210 Z" fill="#ffffff" stroke="#1e293b" stroke-width="2.2" />
+
+                <!-- Oberarmknochen (Humerus) -->
+                <path d="M242 214 L268 256" stroke="#ffffff" stroke-width="8" />
+                <path d="M242 214 L268 256" stroke="#334155" stroke-width="2" />
+
+                <!-- 5. UNTERARMKNOCHEN (Elle & Speiche) -->
+                <g id="bone-shape-5">
+                  <line x1="266" y1="258" x2="262" y2="335" stroke="#334155" stroke-width="4" />
+                  <line x1="272" y1="256" x2="269" y2="335" stroke="#64748b" stroke-width="3" />
+                  <!-- Zweites Vorderbein im Hintergrund -->
+                  <line x1="236" y1="262" x2="236" y2="335" stroke="#94a3b8" stroke-width="4" />
+                </g>
+
+                <!-- Vorderfußwurzel & 6. FINGERKNOCHEN -->
+                <g id="bone-shape-6">
+                  <!-- Mittelhand -->
+                  <line x1="264" y1="338" x2="264" y2="372" stroke="#334155" stroke-width="4.5" />
+                  <!-- Fingerknochen (aufgesetzt!) -->
+                  <path d="M264 372 L252 386 L246 387" stroke="#1e293b" stroke-width="3.5" fill="none" />
+                  <path d="M268 372 L260 386 L254 387" stroke="#1e293b" stroke-width="3" fill="none" />
+                  <!-- Hinteres Vorderbein Pfote -->
+                  <path d="M236 338 L236 372 L222 386 L216 387" stroke="#94a3b8" stroke-width="3.5" fill="none" />
+                </g>
+
+                <!-- 3. BECKENKNOCHEN -->
+                <path id="bone-shape-3" d="M448 172 L496 184 L488 204 L452 194 Z" fill="#ffffff" stroke="#1e293b" stroke-width="2.2" />
+
+                <!-- 7. OBERSCHENKELKNOCHEN (Femur) -->
+                <g id="bone-shape-7">
+                  <line x1="472" y1="196" x2="454" y2="268" stroke="#ffffff" stroke-width="9" />
+                  <line x1="472" y1="196" x2="454" y2="268" stroke="#1e293b" stroke-width="2.5" />
+                  <circle cx="472" cy="196" r="5" fill="#ffffff" />
+                </g>
+
+                <!-- Unterschenkel (Schien- & Wadenbein) -->
+                <line x1="454" y1="270" x2="494" y2="326" stroke="#334155" stroke-width="5" />
+                <line x1="440" y1="270" x2="452" y2="326" stroke="#94a3b8" stroke-width="4" />
+
+                <!-- 8. FERSE (Sprunggelenk) & Hinterpfote -->
+                <g id="bone-shape-8">
+                  <!-- Fersenbein ragt nach hinten -->
+                  <path d="M494 326 L504 322 L498 338 L492 336 Z" fill="#ffffff" stroke="#1e293b" stroke-width="2" />
+                  <!-- Mittelfuß & Zehen hinten -->
+                  <line x1="494" y1="336" x2="496" y2="372" stroke="#334155" stroke-width="4.5" />
+                  <path d="M496 372 L484 386 L478 387" stroke="#334155" stroke-width="3.5" fill="none" />
+                  <!-- Zweites Hinterbein -->
+                  <path d="M452 326 L446 372 L434 386" stroke="#94a3b8" stroke-width="3.5" fill="none" />
+                </g>
+              </g>
+
+              <!-- BESCHRIFTUNGSLINIEN & HOTSPOTS (1 bis 8 aus der Klassenarbeit) -->
+              <g font-family="Nunito, sans-serif" font-weight="800" font-size="13">
+                <!-- 1. Schulterblatt (oben links) -->
+                <line x1="248" y1="185" x2="248" y2="62" stroke="#0284c7" stroke-width="2" stroke-dasharray="3,2" />
+                <g class="bone-hotspot bone-active" id="hotspot-1" onclick="selectBone(1)">
+                  <circle cx="248" cy="62" r="11" fill="#0284c7" stroke="#fff" stroke-width="2" />
+                  <text x="248" y="66" text-anchor="middle" fill="#fff">1</text>
+                </g>
+
+                <!-- 2. Wirbelsäule (oben Mitte) -->
+                <line x1="355" y1="168" x2="355" y2="62" stroke="#0284c7" stroke-width="2" stroke-dasharray="3,2" />
+                <g class="bone-hotspot" id="hotspot-2" onclick="selectBone(2)">
+                  <circle cx="355" cy="62" r="11" fill="#0284c7" stroke="#fff" stroke-width="2" />
+                  <text x="355" y="66" text-anchor="middle" fill="#fff">2</text>
+                </g>
+
+                <!-- 3. Beckenknochen (oben rechts) -->
+                <line x1="485" y1="184" x2="610" y2="184" stroke="#0284c7" stroke-width="2" stroke-dasharray="3,2" />
+                <g class="bone-hotspot" id="hotspot-3" onclick="selectBone(3)">
+                  <circle cx="610" cy="184" r="11" fill="#0284c7" stroke="#fff" stroke-width="2" />
+                  <text x="610" y="188" text-anchor="middle" fill="#fff">3</text>
+                </g>
+
+                <!-- 4. Rippen (Mitte links) -->
+                <line x1="295" y1="215" x2="115" y2="215" stroke="#0284c7" stroke-width="2" stroke-dasharray="3,2" />
+                <g class="bone-hotspot" id="hotspot-4" onclick="selectBone(4)">
+                  <circle cx="115" cy="215" r="11" fill="#0284c7" stroke="#fff" stroke-width="2" />
+                  <text x="115" y="219" text-anchor="middle" fill="#fff">4</text>
+                </g>
+
+                <!-- 5. Unterarmknochen (unten Mitte links) -->
+                <line x1="266" y1="295" x2="115" y2="295" stroke="#0284c7" stroke-width="2" stroke-dasharray="3,2" />
+                <g class="bone-hotspot" id="hotspot-5" onclick="selectBone(5)">
+                  <circle cx="115" cy="295" r="11" fill="#0284c7" stroke="#fff" stroke-width="2" />
+                  <text x="115" y="299" text-anchor="middle" fill="#fff">5</text>
+                </g>
+
+                <!-- 6. Fingerknochen (ganz unten links) -->
+                <line x1="248" y1="384" x2="115" y2="384" stroke="#0284c7" stroke-width="2" stroke-dasharray="3,2" />
+                <g class="bone-hotspot" id="hotspot-6" onclick="selectBone(6)">
+                  <circle cx="115" cy="384" r="11" fill="#0284c7" stroke="#fff" stroke-width="2" />
+                  <text x="115" y="388" text-anchor="middle" fill="#fff">6</text>
+                </g>
+
+                <!-- 7. Oberschenkelknochen (Mitte rechts) -->
+                <line x1="464" y1="238" x2="610" y2="238" stroke="#0284c7" stroke-width="2" stroke-dasharray="3,2" />
+                <g class="bone-hotspot" id="hotspot-7" onclick="selectBone(7)">
+                  <circle cx="610" cy="238" r="11" fill="#0284c7" stroke="#fff" stroke-width="2" />
+                  <text x="610" y="242" text-anchor="middle" fill="#fff">7</text>
+                </g>
+
+                <!-- 8. Ferse (unten rechts) -->
+                <line x1="504" y1="328" x2="610" y2="328" stroke="#0284c7" stroke-width="2" stroke-dasharray="3,2" />
+                <g class="bone-hotspot" id="hotspot-8" onclick="selectBone(8)">
+                  <circle cx="610" cy="328" r="11" fill="#0284c7" stroke="#fff" stroke-width="2" />
+                  <text x="610" y="332" text-anchor="middle" fill="#fff">8</text>
+                </g>
+              </g>
+            </svg>
+          </div>
+
+          <!-- Rechte Spalte: Entdecker-Karte ODER Quiz-Dropdowns -->
+          <div class="lg:col-span-4">
+            <!-- MODUS 1: ENTDECKEN -->
+            <div id="dog-learn-panel" class="space-y-4">
+              <div class="bg-sky-50 border-2 border-sky-200 rounded-3xl p-5 shadow-sm">
+                <div class="flex items-center gap-3 mb-2">
+                  <span id="bone-detail-num" class="w-9 h-9 rounded-full bg-emerald-600 text-white font-extrabold flex items-center justify-center text-lg shadow">1</span>
+                  <h3 id="bone-detail-title" class="text-xl font-extrabold text-sky-950">Schulterblatt</h3>
+                </div>
+                <p id="bone-detail-text" class="text-sm text-sky-900 leading-relaxed">
+                  Das flache Schulterblatt verbindet das Vorderbein über Muskeln mit dem Rumpf. Da dem Hund ein Schlüsselbein fehlt, kann er beim Laufen besonders weite Schritte machen!
+                </p>
+              </div>
+
+              <!-- Schnelle Auswahl-Buttons für alle 8 Knochen -->
+              <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                <p class="text-xs font-extrabold text-slate-500 uppercase mb-2">Alle 8 Knochen im Überblick:</p>
+                <div class="grid grid-cols-2 gap-1.5" id="bone-quick-buttons">
+                  <!-- Wird per JS befüllt -->
+                </div>
+              </div>
+
+              <!-- Wichtiges Klausur-Wissen: Zehengänger & Fingerknochen -->
+              <div class="bg-amber-50 border border-amber-300 p-4 rounded-2xl">
+                <h4 class="font-extrabold text-amber-900 text-sm flex items-center gap-1.5">
+                  <span>⚠️</span> Häufiger Fehler in der Arbeit!
+                </h4>
+                <p class="text-xs text-amber-900 mt-1 leading-relaxed">
+                  Am <strong>Vorderbein (Nr. 6)</strong> heißen die Knochen unten <strong>Fingerknochen</strong> (nicht Zehenknochen!). Der Hund ist ein <strong>Zehengänger</strong>: Seine <strong>Ferse (Nr. 8)</strong> liegt weit oben am Hinterbein in der Luft!
+                </p>
+              </div>
+            </div>
+
+            <!-- MODUS 2: BESCHRIFTUNGS-QUIZ -->
+            <div id="dog-quiz-panel" class="hidden bg-slate-50 border-2 border-sky-200 rounded-3xl p-4 space-y-2.5">
+              <h3 class="font-extrabold text-slate-800 text-base mb-1">Ordne die 8 Nummern zu:</h3>
+              <div id="dog-quiz-rows" class="space-y-2">
+                <!-- 8 Dropdowns per JS -->
+              </div>
+              <div class="pt-2 flex flex-col gap-2">
+                <button onclick="checkDogQuiz()" class="w-full py-2.5 bg-sky-600 hover:bg-sky-700 text-white font-extrabold rounded-xl shadow transition">
+                  ✅ Beschriftung prüfen
+                </button>
+                <p id="dog-quiz-feedback" class="text-xs font-bold text-center"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-between">
+        <button onclick="switchTab(1)" class="px-5 py-3 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-2xl transition">
+          ⬅️ Zurück
+        </button>
+        <button onclick="switchTab(3)" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-2xl shadow-md transition flex items-center gap-2">
+          Weiter zu Modul 4: Hundehaltung <span>➡️</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- MODUL 4: HUNDEHALTUNG & VERANTWORTUNG (PROBLEME & LÖSUNGEN)         -->
+    <!-- =================================================================== -->
+    <section id="module-3" class="module-section hidden fade-in space-y-6">
+      <div class="bg-white rounded-3xl p-6 shadow-sm border border-sky-100">
+        <span class="inline-block px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-extrabold uppercase tracking-wider mb-2">Modul 4 • Verantwortung &amp; Alltag</span>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-800">Versorgung &amp; Haltung eines Hundes</h2>
+        <p class="text-slate-600 mt-2">
+          Ein Hund ist ein Lebewesen mit vielen Bedürfnissen und lebt oft 12 bis 16 Jahre lang. Vor der Anschaffung muss man gut überlegen, welche <strong>Probleme</strong> auftreten können und welche <strong>Lösungsmöglichkeiten</strong> es gibt.
+        </p>
+
+        <!-- Interaktives Zuordnungsspiel: Problem -> Lösung -->
+        <div class="mt-6 bg-slate-50 p-5 rounded-3xl border border-slate-200">
+          <h3 class="font-extrabold text-slate-800 text-lg mb-1">🧩 Zuordnungs-Trainer: Finde die passende Lösung!</h3>
+          <p class="text-xs sm:text-sm text-slate-500 mb-4">Klicke zuerst links ein <strong>Problem</strong> an und wähle dann rechts die passende <strong>Lösungsmöglichkeit</strong>.</p>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Linke Spalte: Probleme -->
+            <div class="space-y-2.5" id="dog-problems-list">
+              <!-- Wird per JS befüllt -->
+            </div>
+            <!-- Rechte Spalte: Lösungen -->
+            <div class="space-y-2.5" id="dog-solutions-list">
+              <!-- Wird per JS befüllt -->
+            </div>
+          </div>
+
+          <div class="mt-4 flex items-center justify-between flex-wrap gap-2">
+            <span id="matching-feedback" class="text-sm font-bold text-slate-700">Wähle ein Problem aus, um zu starten!</span>
+            <button onclick="initMatchingGame()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold rounded-xl transition">
+              🔄 Neu mischen
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Spickzettel / Merkhilfe für Aufgabe 3.2 (3 Problem-Lösungs-Paare) -->
+      <div class="bg-white rounded-3xl p-6 shadow-sm border-2 border-amber-200">
+        <span class="px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-extrabold">Übung zu Aufgabe 3.2</span>
+        <h3 class="text-xl font-extrabold text-slate-800 mt-1 mb-2">Deine 3 Beispiele für die Klassenarbeit</h3>
+        <p class="text-sm text-slate-600 mb-4">
+          In Aufgabe 3.2 sollst du <strong>drei Probleme</strong> bei der Versorgung und Haltung eines Hundes nennen und jeweils eine <strong>Lösungsmöglichkeit</strong> aufzeigen. Schreibe hier drei eigene Paare auf und prüfe sie mit der Musterlösung!
+        </p>
+
+        <div class="space-y-4">
+          <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-extrabold text-rose-700 mb-1">1. Problem:</label>
+              <input type="text" id="user-prob-1" placeholder="z. B. Niemand hat tagsüber Zeit (Schule/Arbeit)..." class="w-full p-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:border-sky-500">
+            </div>
+            <div>
+              <label class="block text-xs font-extrabold text-emerald-700 mb-1">1. Lösungsmöglichkeit:</label>
+              <input type="text" id="user-sol-1" placeholder="z. B. Hundesitter engagieren oder Familienmitglieder wechseln sich ab..." class="w-full p-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:border-sky-500">
+            </div>
+          </div>
+
+          <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-extrabold text-rose-700 mb-1">2. Problem:</label>
+              <input type="text" id="user-prob-2" placeholder="z. B. Urlaubsreise (Flugreise)..." class="w-full p-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:border-sky-500">
+            </div>
+            <div>
+              <label class="block text-xs font-extrabold text-emerald-700 mb-1">2. Lösungsmöglichkeit:</label>
+              <input type="text" id="user-sol-2" placeholder="z. B. Hundepension buchen oder Urlaub mit Hund planen..." class="w-full p-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:border-sky-500">
+            </div>
+          </div>
+
+          <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-extrabold text-rose-700 mb-1">3. Problem:</label>
+              <input type="text" id="user-prob-3" placeholder="z. B. Hohe Tierarzt- und Futterkosten..." class="w-full p-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:border-sky-500">
+            </div>
+            <div>
+              <label class="block text-xs font-extrabold text-emerald-700 mb-1">3. Lösungsmöglichkeit:</label>
+              <input type="text" id="user-sol-3" placeholder="z. B. Vorher Geld ansparen / Tierkrankenversicherung abschließen..." class="w-full p-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:border-sky-500">
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-4 flex flex-wrap items-center gap-3">
+          <button onclick="checkCustomPairs()" class="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl shadow transition">
+            ✅ Meine 3 Beispiele prüfen &amp; Musterlösungen zeigen
+          </button>
+          <span id="custom-pairs-feedback" class="text-sm font-bold"></span>
+        </div>
+
+        <!-- Aufklappbare Musterlösung -->
+        <div id="sample-solutions-box" class="hidden mt-4 p-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-sm text-emerald-950 space-y-2">
+          <h4 class="font-extrabold">🌟 Gute Beispiele für die volle Punktzahl in der Klassenarbeit:</h4>
+          <ul class="list-disc pl-5 space-y-1 text-xs sm:text-sm">
+            <li><strong>Zeitmangel (Schule &amp; Beruf):</strong> Der Hund wäre zu lange allein. → <em>Lösung:</em> Fester Gassigeh-Plan in der Familie, Nachbarn oder einen Hundesitter organisieren.</li>
+            <li><strong>Urlaubsplanung:</strong> Im Hotel oder Flugzeug sind Hunde oft nicht erlaubt. → <em>Lösung:</em> Urlaubsziel so wählen, dass der Hund mitkann, oder rechtzeitig Verwandte / eine Hundepension fragen.</li>
+            <li><strong>Hohe Kosten (Futter, Hundesteuer, Tierarzt):</strong> Eine Operation kann sehr teuer werden. → <em>Lösung:</em> Vorher die monatlichen Kosten berechnen, Geld zurücklegen oder eine Tierkrankenversicherung abschließen.</li>
+            <li><strong>Allergie gegen Hundehaare:</strong> Ein Familienmitglied reagiert allergisch. → <em>Lösung:</em> Vor der Anschaffung beim Arzt einen Allergietest machen.</li>
+            <li><strong>Mietwohnung / Vermieter:</strong> Nicht in jeder Wohnung ist Hundehaltung erlaubt. → <em>Lösung:</em> Vorher schriftliche Erlaubnis des Vermieters einholen.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="flex justify-between">
+        <button onclick="switchTab(2)" class="px-5 py-3 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-2xl transition">
+          ⬅️ Zurück
+        </button>
+        <button onclick="switchTab(4)" class="px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-extrabold rounded-2xl shadow-md transition flex items-center gap-2">
+          Zur Probe-Klassenarbeit <span>🏆</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- MODUL 5: ABSCHLUSS-QUIZ (PROBE-KLASSENARBEIT)                       -->
+    <!-- =================================================================== -->
+    <section id="module-4" class="module-section hidden fade-in space-y-6">
+      <div class="bg-white rounded-3xl p-6 shadow-sm border-2 border-amber-300">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-4 mb-6">
+          <div>
+            <span class="inline-block px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-extrabold uppercase tracking-wider mb-1">Abschluss-Check</span>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-800">Probe-Klassenarbeit Biologie (Klasse 5)</h2>
+            <p class="text-sm text-slate-500 mt-1">Beantworte alle 8 Fragen aus allen Themenbereichen und erhalte direkt deine Auswertung und Schulnote!</p>
+          </div>
+          <div class="bg-slate-100 px-4 py-2 rounded-2xl text-right">
+            <span class="text-xs font-bold text-slate-500 block">Maximal erreichbar</span>
+            <span class="text-lg font-extrabold text-slate-800">8 Punkte</span>
+          </div>
+        </div>
+
+        <div id="exam-questions-container" class="space-y-5">
+          <!-- Fragen werden per JS generiert -->
+        </div>
+
+        <div class="mt-8 pt-5 border-t border-slate-200 flex flex-wrap items-center gap-4">
+          <button onclick="gradeFinalExam()" class="px-7 py-3.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-extrabold rounded-2xl shadow-lg transition text-base">
+            📝 Klassenarbeit abgeben &amp; auswerten
+          </button>
+          <button onclick="renderFinalExam()" class="px-5 py-3.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-2xl transition text-sm">
+            🔄 Neu starten
+          </button>
+        </div>
+
+        <!-- Ergebnis-Urkunde -->
+        <div id="exam-result-box" class="hidden mt-6 p-6 rounded-3xl bg-gradient-to-br from-sky-50 via-emerald-50 to-amber-50 border-2 border-emerald-300 shadow-md">
+          <div class="flex flex-col sm:flex-row items-center gap-5">
+            <div id="exam-grade-badge" class="w-24 h-24 rounded-3xl bg-emerald-600 text-white flex flex-col items-center justify-center shadow-lg flex-shrink-0">
+              <span class="text-xs font-bold uppercase">Note</span>
+              <span id="exam-grade-value" class="text-4xl font-extrabold">1</span>
+            </div>
+            <div class="text-center sm:text-left">
+              <h3 id="exam-result-title" class="text-2xl font-extrabold text-slate-800">Hervorragend gemacht!</h3>
+              <p id="exam-result-score" class="text-base font-bold text-emerald-700 mt-1">Du hast 8 von 8 Punkten erreicht.</p>
+              <p id="exam-result-comment" class="text-sm text-slate-600 mt-2">Du bist bestens auf deine Biologie-Klassenarbeit vorbereitet!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-start">
+        <button onclick="switchTab(3)" class="px-5 py-3 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-2xl transition">
+          ⬅️ Zurück zu Modul 4
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500">
+    Bio-Entdeckerwelt Klasse 5 • Interaktives Lernmaterial zu „Kennzeichen des Lebendigen &amp; Der Hund“
+  </footer>
+
+  <!-- ===================================================================== -->
+  <!-- JAVASCRIPT LOGIK                                                      -->
+  <!-- ===================================================================== -->
+  <script>
+    // --- GLOBALE PUNKTE- & FORTSCHRITTSVERWALTUNG ---
+    let earnedBadges = new Set();
+    const MAX_STARS = 30;
+
+    function addStars(id, amount) {
+      if (!earnedBadges.has(id)) {
+        earnedBadges.add(id);
+        updateScoreDisplay();
+      }
+    }
+
+    function updateScoreDisplay() {
+      let total = 0;
+      earnedBadges.forEach(item => {
+        const parts = item.split(':');
+        total += parseInt(parts[1] || 0, 10);
+      });
+      if (total > MAX_STARS) total = MAX_STARS;
+      document.getElementById('star-count').textContent = total;
+      const pct = Math.min(100, Math.round((total / MAX_STARS) * 100));
+      document.getElementById('progress-bar').style.width = pct + '%';
+    }
+
+    // --- TAB-NAVIGATION ---
+    function switchTab(index) {
+      const sections = document.querySelectorAll('.module-section');
+      const buttons = document.querySelectorAll('.tab-btn');
+
+      sections.forEach((sec, i) => {
+        if (i === index) {
+          sec.classList.remove('hidden');
+        } else {
+          sec.classList.add('hidden');
+        }
+      });
+
+      buttons.forEach((btn, i) => {
+        if (i === index) {
+          btn.className = "tab-btn flex-shrink-0 px-4 py-2 rounded-xl font-bold text-sm transition-all bg-white text-teal-800 shadow-sm flex items-center gap-2";
+        } else {
+          btn.className = "tab-btn flex-shrink-0 px-4 py-2 rounded-xl font-bold text-sm transition-all text-white hover:bg-white/20 flex items-center gap-2";
+        }
+      });
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // --- MODUL 1: DIE 5 KENNZEICHEN KARTEN ---
+    const characteristicsData = [
+      {
+        icon: "🏃‍♂️",
+        title: "Eigenbewegung",
+        short: "Bewegung aus eigener Kraft",
+        detail: "Tiere laufen, fliegen oder schwimmen. Aber auch Pflanzen bewegen sich – z. B. drehen sie sich zum Licht oder klappen abends ihre Blätter ein!"
+      },
+      {
+        icon: "🌱",
+        title: "Wachstum",
+        short: "Größer werden & entwickeln",
+        detail: "Aus einem kleinen Samenkorn wächst ein Baum, aus einem Welpen wird ein ausgewachsener Hund."
+      },
+      {
+        icon: "🍎",
+        title: "Stoffwechsel",
+        short: "Nahrung, Atmung & Ausscheidung",
+        detail: "Lebewesen nehmen Stoffe auf (Nahrung, Wasser, Sauerstoff), wandeln sie im Körper um und scheiden Abfallstoffe wieder aus."
+      },
+      {
+        icon: "🐣",
+        title: "Fortpflanzung",
+        short: "Nachkommen bekommen",
+        detail: "Lebewesen sorgen für Nachwuchs (z. B. Welpen, Küken oder Pflanzensamen), damit ihre Art weiterlebt."
+      },
+      {
+        icon: "⚡",
+        title: "Reizbarkeit",
+        short: "Auf Umweltreize reagieren",
+        detail: "Lebewesen nehmen Reize wie Licht, Wärme, Kälte, Geräusche oder Berührungen wahr und reagieren darauf."
+      }
+    ];
+
+    function renderCharacteristics() {
+      const grid = document.getElementById('characteristics-grid');
+      grid.innerHTML = characteristicsData.map((c, idx) => `
+        <div onclick="toggleCharCard(${idx})" class="bg-slate-50 hover:bg-emerald-50 border-2 border-slate-200 hover:border-emerald-400 rounded-2xl p-4 cursor-pointer transition-all flex flex-col justify-between">
+          <div>
+            <div class="text-3xl mb-2">${c.icon}</div>
+            <h4 class="font-extrabold text-slate-800 text-base">${idx + 1}. ${c.title}</h4>
+            <p class="text-xs font-bold text-teal-700 mt-0.5">${c.short}</p>
+          </div>
+          <p id="char-detail-${idx}" class="hidden text-xs text-slate-600 mt-3 pt-2 border-t border-emerald-200 leading-relaxed">
+            ${c.detail}
+          </p>
+          <span id="char-hint-${idx}" class="text-[11px] text-slate-400 font-bold mt-3 block">👆 Klicken für Beispiel</span>
+        </div>
+      `).join('');
+    }
+
+    function toggleCharCard(idx) {
+      const detail = document.getElementById(`char-detail-${idx}`);
+      const hint = document.getElementById(`char-hint-${idx}`);
+      const isHidden = detail.classList.contains('hidden');
+      if (isHidden) {
+        detail.classList.remove('hidden');
+        hint.classList.add('hidden');
+        addStars(`char_${idx}:1`, 1);
+      } else {
+        detail.classList.add('hidden');
+        hint.classList.remove('hidden');
+      }
+    }
+
+    // --- MODUL 1: LÜCKENTEXT ---
+    function fillClozeHint() {
+      const bank = document.getElementById('word-bank');
+      bank.classList.toggle('hidden');
+    }
+
+    function normalizeText(str) {
+      return str.trim().toLowerCase().replace(/\s+/g, ' ');
+    }
+
+    function checkClozeText() {
+      const inputs = document.querySelectorAll('.gap-input');
+      let correctCount = 0;
+
+      inputs.forEach(input => {
+        const userVal = normalizeText(input.value);
+        const expected = normalizeText(input.dataset.answer);
+
+        // Kleine Toleranz für Groß-/Kleinschreibung oder Tippfehler bei "eigener Kraft bewegt"
+        const isMatch = (userVal === expected) || 
+                        (expected === "eigener kraft bewegt" && (userVal === "eigener kraft bewegt" || userVal === "bewegt"));
+
+        input.classList.remove('gap-correct', 'gap-wrong');
+        if (isMatch) {
+          input.classList.add('gap-correct');
+          correctCount++;
+        } else {
+          input.classList.add('gap-wrong');
+        }
+      });
+
+      const fb = document.getElementById('cloze-feedback');
+      if (correctCount === inputs.length) {
+        fb.textContent = `🎉 Perfekt! Alle ${inputs.length} Lücken sind richtig! (+6 Sterne)`;
+        fb.className = "text-sm font-extrabold text-emerald-700";
+        addStars('cloze_complete:6', 6);
+      } else {
+        fb.textContent = `Du hast ${correctCount} von ${inputs.length} Lücken richtig. Schau dir die rot markierten Felder noch einmal an!`;
+        fb.className = "text-sm font-bold text-amber-700";
+      }
+    }
+
+    function resetClozeText() {
+      const inputs = document.querySelectorAll('.gap-input');
+      inputs.forEach(input => {
+        input.value = '';
+        input.classList.remove('gap-correct', 'gap-wrong');
+      });
+      document.getElementById('cloze-feedback').textContent = '';
+    }
+
+    // --- MODUL 2: SAUERKLEE ANIMATION & QUIZ ---
+    function setSauerkleeState(mode) {
+      const stage = document.getElementById('sauerklee-stage');
+      const badge = document.getElementById('sauerklee-time-badge');
+      const sun = document.getElementById('celestial-sun');
+      const moon = document.getElementById('celestial-moon');
+      const flowerOpen = document.getElementById('flower-open');
+      const flowerClosed = document.getElementById('flower-closed');
+      const flowerGroup = document.getElementById('flower-group');
+      const explanation = document.getElementById('sauerklee-explanation');
+      const labelText = document.getElementById('svg-label-sauerklee');
+
+      const btnDay = document.getElementById('btn-day');
+      const btnNight = document.getElementById('btn-night');
+
+      const leafIds = ['leaf1', 'leaf2', 'leaf3'];
+
+      if (mode === 'day') {
+        stage.style.background = "linear-gradient(180deg, #bae6fd 0%, #e0f2fe 70%, #dcfce7 70%, #bbf7d0 100%)";
+        badge.innerHTML = "<span>☀️</span> Tag: Helles Sonnenlicht &amp; Wärme";
+        badge.className = "absolute top-3 left-3 z-10 px-3 py-1.5 rounded-xl font-extrabold text-xs shadow bg-white/90 text-slate-800 flex items-center gap-2";
+        labelText.setAttribute('fill', '#1e293b');
+
+        sun.style.transform = "translate(0px, 0px)";
+        sun.style.opacity = "1";
+        moon.style.transform = "translate(0px, -40px)";
+        moon.style.opacity = "0";
+
+        flowerOpen.style.opacity = "1";
+        flowerClosed.style.opacity = "0";
+        flowerGroup.style.transform = "rotate(0deg)";
+
+        leafIds.forEach(id => {
+          document.getElementById(`${id}-top`).style.transform = "rotate(0deg) scaleY(1)";
+          document.getElementById(`${id}-left`).style.transform = "rotate(0deg)";
+          document.getElementById(`${id}-right`).style.transform = "rotate(0deg)";
+        });
+
+        explanation.className = "bg-emerald-50 border border-emerald-200 p-4 rounded-2xl space-y-2";
+        explanation.innerHTML = `
+          <h4 class="font-extrabold text-emerald-900 text-base">☀️ Beobachtung am Tag:</h4>
+          <p class="text-sm text-emerald-800 leading-relaxed">
+            Bei Helligkeit und Wärme sind die <strong>dreiteiligen Blätter waagerecht ausgebreitet</strong>, um möglichst viel Sonnenlicht einzufangen. Auch die weiße <strong>Blüte ist weit geöffnet</strong>.
+          </p>
+        `;
+
+        btnDay.className = "py-3 px-4 rounded-xl font-extrabold text-sm bg-amber-400 text-amber-950 shadow-md ring-2 ring-amber-500 transition flex items-center justify-center gap-2";
+        btnNight.className = "py-3 px-4 rounded-xl font-extrabold text-sm bg-slate-200 text-slate-700 hover:bg-indigo-900 hover:text-white transition flex items-center justify-center gap-2";
+      } else {
+        stage.style.background = "linear-gradient(180deg, #1e1b4b 0%, #312e81 70%, #064e3b 70%, #022c22 100%)";
+        badge.innerHTML = "<span>🌙</span> Nacht / Kälte: Dunkelheit";
+        badge.className = "absolute top-3 left-3 z-10 px-3 py-1.5 rounded-xl font-extrabold text-xs shadow bg-indigo-950/90 text-amber-200 border border-indigo-700 flex items-center gap-2";
+        labelText.setAttribute('fill', '#e2e8f0');
+
+        sun.style.transform = "translate(0px, 50px)";
+        sun.style.opacity = "0";
+        moon.style.transform = "translate(0px, 0px)";
+        moon.style.opacity = "1";
+
+        flowerOpen.style.opacity = "0";
+        flowerClosed.style.opacity = "1";
+        flowerGroup.style.transform = "rotate(-15deg)";
+
+        // Blätter klappen schirmartig nach unten zusammen
+        leafIds.forEach(id => {
+          document.getElementById(`${id}-top`).style.transform = "rotate(180deg) scaleY(0.85)";
+          document.getElementById(`${id}-left`).style.transform = "rotate(-52deg)";
+          document.getElementById(`${id}-right`).style.transform = "rotate(52deg)";
+        });
+
+        explanation.className = "bg-indigo-50 border border-indigo-200 p-4 rounded-2xl space-y-2";
+        explanation.innerHTML = `
+          <h4 class="font-extrabold text-indigo-950 text-base">🌙 Beobachtung bei Nacht / Kälte:</h4>
+          <p class="text-sm text-indigo-900 leading-relaxed">
+            Wird es dunkel oder kalt, <strong>klappt der Sauerklee seine drei Teilblätter wie einen Regenschirm nach unten zusammen</strong>. Die <strong>Blüte schließt sich und neigt sich nach unten</strong>, um den Blütenstaub vor Tau und Kälte zu schützen!
+          </p>
+        `;
+
+        btnNight.className = "py-3 px-4 rounded-xl font-extrabold text-sm bg-indigo-900 text-amber-300 shadow-md ring-2 ring-indigo-500 transition flex items-center justify-center gap-2";
+        btnDay.className = "py-3 px-4 rounded-xl font-extrabold text-sm bg-slate-200 text-slate-700 hover:bg-amber-300 transition flex items-center justify-center gap-2";
+        addStars('sauerklee_night:2', 2);
+      }
+    }
+
+    function checkSauerkleeQuiz() {
+      const q1 = document.querySelector('input[name="sk_q1"]:checked');
+      const q2 = document.querySelector('input[name="sk_q2"]:checked');
+      const fb = document.getElementById('sauerklee-feedback');
+
+      if (!q1 || !q2) {
+        fb.textContent = "Bitte wähle bei beiden Fragen eine Antwort aus!";
+        fb.className = "text-sm font-bold text-amber-700";
+        return;
+      }
+
+      if (q1.value === 'correct' && q2.value === 'correct') {
+        fb.textContent = "🌟 Super! Beide Antworten zum Sauerklee sind goldrichtig! (+4 Sterne)";
+        fb.className = "text-sm font-extrabold text-emerald-700";
+        addStars('sauerklee_quiz:4', 4);
+      } else {
+        fb.textContent = "Noch nicht ganz richtig – schau dir die Animation oben noch einmal genau an!";
+        fb.className = "text-sm font-bold text-rose-600";
+      }
+    }
+
+    // --- MODUL 3: HUNDESKELETT DATEN & INTERAKTION ---
+    const dogBonesData = [
+      {
+        num: 1,
+        name: "Schulterblatt",
+        text: "Das flache Schulterblatt liegt am oberen Vorderbein. Da Hunde kein Schlüsselbein besitzen, ist das Schulterblatt sehr beweglich – das ermöglicht weite Sprünge und schnelles Rennen."
+      },
+      {
+        num: 2,
+        name: "Wirbelsäule",
+        text: "Die Wirbelsäule besteht aus vielen einzelnen Wirbeln. Sie stützt den gesamten Körper, schützt das Rückenmark im Inneren und macht den Rücken beim Laufen biegsam."
+      },
+      {
+        num: 3,
+        name: "Beckenknochen",
+        text: "Der Beckenknochen verbindet die Wirbelsäule fest mit den Hinterbeinen. So wird die starke Schubkraft der Hinterbeine beim Sprinten auf den Körper übertragen."
+      },
+      {
+        num: 4,
+        name: "Rippen",
+        text: "Die gebogenen Rippen bilden zusammen mit dem Brustbein den Brustkorb. Sie schützen lebenswichtige innere Organe wie Herz und Lunge."
+      },
+      {
+        num: 5,
+        name: "Unterarmknochen",
+        text: "Im Vorderbein liegen – genau wie beim Menschen – zwei Knochen nebeneinander: Elle und Speiche (zusammen die Unterarmknochen)."
+      },
+      {
+        num: 6,
+        name: "Fingerknochen",
+        text: "Wichtig: Am Vorderbein des Hundes befinden sich unten die Fingerknochen (nicht Zehenknochen!). Der Hund läuft nur auf seinen Finger- und Zehenspitzen (Zehengänger)."
+      },
+      {
+        num: 7,
+        name: "Oberschenkelknochen",
+        text: "Der Oberschenkelknochen ist ein sehr kräftiger Röhrenknochen am Hinterbein, an dem starke Lauf- und Sprungmuskeln ansetzen."
+      },
+      {
+        num: 8,
+        name: "Ferse",
+        text: "Das Gelenk, das am Hinterbein wie ein nach hinten gerichtetes Knie aussieht, ist in Wirklichkeit die Ferse (Sprunggelenk)! Da der Hund ein Zehengänger ist, berührt die Ferse den Boden nicht."
+      }
+    ];
+
+    function initDogSkeleton() {
+      // Quick Buttons
+      const quickContainer = document.getElementById('bone-quick-buttons');
+      quickContainer.innerHTML = dogBonesData.map(b => `
+        <button onclick="selectBone(${b.num})" id="bone-btn-${b.num}" class="text-left px-2.5 py-1.5 rounded-xl text-xs font-bold bg-white border border-slate-200 hover:border-sky-400 transition truncate">
+          <span class="text-sky-600 font-extrabold">${b.num}.</span> ${b.name}
+        </button>
+      `).join('');
+
+      // Quiz Dropdowns
+      const quizContainer = document.getElementById('dog-quiz-rows');
+      const shuffledNames = [...dogBonesData].map(b => b.name).sort();
+      quizContainer.innerHTML = dogBonesData.map(b => `
+        <div class="flex items-center gap-2 bg-white p-2 rounded-xl border border-slate-200" id="dog-quiz-row-${b.num}">
+          <span class="w-6 h-6 rounded-full bg-sky-600 text-white text-xs font-extrabold flex items-center justify-center flex-shrink-0">${b.num}</span>
+          <select id="dog-select-${b.num}" class="w-full text-xs sm:text-sm font-bold text-slate-700 bg-transparent focus:outline-none">
+            <option value="">-- Knochen wählen --</option>
+            ${shuffledNames.map(name => `<option value="${name}">${name}</option>`).join('')}
+          </select>
+        </div>
+      `).join('');
+
+      selectBone(1);
+    }
+
+    function selectBone(num) {
+      const bone = dogBonesData.find(b => b.num === num);
+      if (!bone) return;
+
+      document.getElementById('bone-detail-num').textContent = bone.num;
+      document.getElementById('bone-detail-title').textContent = bone.name;
+      document.getElementById('bone-detail-text').textContent = bone.text;
+
+      // Hotspots im SVG hervorheben
+      for (let i = 1; i <= 8; i++) {
+        const hs = document.getElementById(`hotspot-${i}`);
+        const btn = document.getElementById(`bone-btn-${i}`);
+        if (i === num) {
+          hs.classList.add('bone-active');
+          if (btn) btn.className = "text-left px-2.5 py-1.5 rounded-xl text-xs font-extrabold bg-emerald-100 border-2 border-emerald-500 text-emerald-900 transition truncate";
+        } else {
+          hs.classList.remove('bone-active');
+          if (btn) btn.className = "text-left px-2.5 py-1.5 rounded-xl text-xs font-bold bg-white border border-slate-200 hover:border-sky-400 transition truncate";
+        }
+      }
+      addStars(`bone_view_${num}:0`, 0);
+    }
+
+    function setDogMode(mode) {
+      const learnPanel = document.getElementById('dog-learn-panel');
+      const quizPanel = document.getElementById('dog-quiz-panel');
+      const btnLearn = document.getElementById('dog-mode-learn');
+      const btnQuiz = document.getElementById('dog-mode-quiz');
+      const desc = document.getElementById('dog-mode-desc');
+
+      if (mode === 'learn') {
+        learnPanel.classList.remove('hidden');
+        quizPanel.classList.add('hidden');
+        btnLearn.className = "px-4 py-2 rounded-xl text-sm font-extrabold bg-sky-600 text-white shadow-sm transition";
+        btnQuiz.className = "px-4 py-2 rounded-xl text-sm font-extrabold text-slate-600 hover:text-slate-900 transition";
+        desc.innerHTML = `Klicke auf die <strong>8 nummerierten Punkte</strong> im Hundeskelett, um zu erfahren, wie die Knochen heißen und welche Besonderheiten es beim Hund gibt!`;
+      } else {
+        learnPanel.classList.add('hidden');
+        quizPanel.classList.remove('hidden');
+        btnQuiz.className = "px-4 py-2 rounded-xl text-sm font-extrabold bg-sky-600 text-white shadow-sm transition";
+        btnLearn.className = "px-4 py-2 rounded-xl text-sm font-extrabold text-slate-600 hover:text-slate-900 transition";
+        desc.innerHTML = `Übe wie in Aufgabe 3.1 der Klassenarbeit: Wähle für jede Zahl (1 bis 8) den richtigen Knochennamen aus!`;
+      }
+    }
+
+    function checkDogQuiz() {
+      let correct = 0;
+      dogBonesData.forEach(b => {
+        const sel = document.getElementById(`dog-select-${b.num}`);
+        const row = document.getElementById(`dog-quiz-row-${b.num}`);
+        if (sel.value === b.name) {
+          correct++;
+          row.className = "flex items-center gap-2 bg-emerald-50 p-2 rounded-xl border-2 border-emerald-500";
+        } else {
+          row.className = "flex items-center gap-2 bg-rose-50 p-2 rounded-xl border-2 border-rose-400";
+        }
+      });
+
+      const fb = document.getElementById('dog-quiz-feedback');
+      if (correct === 8) {
+        fb.textContent = "🎉 Alle 8 Knochen richtig beschriftet! (+6 Sterne)";
+        fb.className = "text-xs font-extrabold text-emerald-700 text-center";
+        addStars('dog_skeleton_quiz:6', 6);
+      } else {
+        fb.textContent = `${correct} von 8 richtig. Korrigiere die rot umrandeten Nummern!`;
+        fb.className = "text-xs font-bold text-rose-600 text-center";
+      }
+    }
+
+    // --- MODUL 4: HUNDEHALTUNG ZUORDNUNGSSPIEL ---
+    const matchingPairsData = [
+      {
+        id: 1,
+        problem: "⏰ Alle Familienmitglieder sind vormittags in der Schule oder auf der Arbeit.",
+        solution: "Einen Hundesitter / Nachbarn organisieren oder Arbeitszeiten aufteilen, damit der Hund nicht zu lange allein bleibt."
+      },
+      {
+        id: 2,
+        problem: "✈️ Die Familie möchte im Sommer eine Flugreise ins Ausland machen.",
+        solution: "Rechtzeitig eine gute Hundepension buchen, Verwandte fragen oder ein Urlaubsziel mit dem Auto wählen, wo der Hund mitdarf."
+      },
+      {
+        id: 3,
+        problem: "💶 Ein Hund wird krank und eine Operation beim Tierarzt kostet viel Geld.",
+        solution: "Monatlich Geld für Notfälle zurücklegen oder eine Tierkrankenversicherung abschließen."
+      },
+      {
+        id: 4,
+        problem: "🤧 Ein Familienmitglied niest stark und bekommt rote Augen in der Nähe von Hunden.",
+        solution: "Vor der Anschaffung eines Hundes beim Arzt einen Allergietest auf Hundehaare durchführen lassen."
+      }
+    ];
+
+    let selectedProblemId = null;
+    let solvedPairs = new Set();
+
+    function initMatchingGame() {
+      selectedProblemId = null;
+      solvedPairs.clear();
+
+      const probContainer = document.getElementById('dog-problems-list');
+      const solContainer = document.getElementById('dog-solutions-list');
+
+      // Lösungen mischen
+      const shuffledSolutions = [...matchingPairsData].sort(() => Math.random() - 0.5);
+
+      probContainer.innerHTML = matchingPairsData.map(p => `
+        <button onclick="selectProblem(${p.id})" id="prob-card-${p.id}" class="w-full text-left p-3.5 rounded-2xl bg-white border-2 border-rose-200 hover:border-rose-400 text-xs sm:text-sm font-bold text-slate-800 shadow-sm transition">
+          <span class="text-rose-600 font-extrabold block text-[11px] uppercase mb-0.5">Problem</span>
+          ${p.problem}
+        </button>
+      `).join('');
+
+      solContainer.innerHTML = shuffledSolutions.map(s => `
+        <button onclick="selectSolution(${s.id})" id="sol-card-${s.id}" class="w-full text-left p-3.5 rounded-2xl bg-white border-2 border-emerald-200 hover:border-emerald-400 text-xs sm:text-sm font-semibold text-slate-700 shadow-sm transition">
+          <span class="text-emerald-600 font-extrabold block text-[11px] uppercase mb-0.5">Lösungsmöglichkeit</span>
+          ${s.solution}
+        </button>
+      `).join('');
+
+      document.getElementById('matching-feedback').textContent = "Klicke links ein Problem an!";
+      document.getElementById('matching-feedback').className = "text-sm font-bold text-slate-700";
+    }
+
+    function selectProblem(id) {
+      if (solvedPairs.has(id)) return;
+      selectedProblemId = id;
+
+      matchingPairsData.forEach(p => {
+        if (!solvedPairs.has(p.id)) {
+          const el = document.getElementById(`prob-card-${p.id}`);
+          el.className = p.id === id
+            ? "w-full text-left p-3.5 rounded-2xl bg-rose-50 border-2 border-rose-500 ring-2 ring-rose-300 text-xs sm:text-sm font-bold text-slate-900 shadow transition"
+            : "w-full text-left p-3.5 rounded-2xl bg-white border-2 border-rose-200 hover:border-rose-400 text-xs sm:text-sm font-bold text-slate-800 shadow-sm transition";
+        }
+      });
+
+      document.getElementById('matching-feedback').textContent = "👉 Jetzt rechts die passende Lösung anklicken!";
+      document.getElementById('matching-feedback').className = "text-sm font-bold text-sky-700";
+    }
+
+    function selectSolution(solId) {
+      if (solvedPairs.has(solId)) return;
+      const fb = document.getElementById('matching-feedback');
+
+      if (selectedProblemId === null) {
+        fb.textContent = "Bitte wähle zuerst links ein Problem aus!";
+        fb.className = "text-sm font-bold text-amber-700";
+        return;
+      }
+
+      if (selectedProblemId === solId) {
+        solvedPairs.add(solId);
+        const pCard = document.getElementById(`prob-card-${solId}`);
+        const sCard = document.getElementById(`sol-card-${solId}`);
+
+        pCard.className = "w-full text-left p-3.5 rounded-2xl bg-emerald-100 border-2 border-emerald-500 text-xs sm:text-sm font-bold text-emerald-950 opacity-85 cursor-default";
+        sCard.className = "w-full text-left p-3.5 rounded-2xl bg-emerald-100 border-2 border-emerald-500 text-xs sm:text-sm font-bold text-emerald-950 opacity-85 cursor-default";
+        selectedProblemId = null;
+
+        if (solvedPairs.size === matchingPairsData.length) {
+          fb.textContent = "🎉 Klasse! Alle 4 Probleme und Lösungen richtig zugeordnet! (+4 Sterne)";
+          fb.className = "text-sm font-extrabold text-emerald-700";
+          addStars('dog_matching:4', 4);
+        } else {
+          fb.textContent = "✅ Richtig zugeordnet! Wähle das nächste Problem.";
+          fb.className = "text-sm font-bold text-emerald-700";
+        }
+      } else {
+        fb.textContent = "❌ Das passt noch nicht ganz zusammen. Probiere eine andere Lösung!";
+        fb.className = "text-sm font-bold text-rose-600";
+      }
+    }
+
+    function checkCustomPairs() {
+      let filled = 0;
+      for (let i = 1; i <= 3; i++) {
+        const p = document.getElementById(`user-prob-${i}`).value.trim();
+        const s = document.getElementById(`user-sol-${i}`).value.trim();
+        if (p.length > 3 && s.length > 3) filled++;
+      }
+
+      const fb = document.getElementById('custom-pairs-feedback');
+      const box = document.getElementById('sample-solutions-box');
+      box.classList.remove('hidden');
+
+      if (filled === 3) {
+        fb.textContent = "🌟 Super! Du hast alle 3 Problem-Lösungs-Paare ausgefüllt! Vergleiche sie mit der Musterlösung unten. (+3 Sterne)";
+        fb.className = "text-sm font-extrabold text-emerald-700";
+        addStars('custom_pairs:3', 3);
+      } else {
+        fb.textContent = `Du hast ${filled} von 3 Paaren ausgefüllt. Unten findest du Beispiele zur Hilfe!`;
+        fb.className = "text-sm font-bold text-amber-700";
+      }
+    }
+
+    // --- MODUL 5: PROBE-KLASSENARBEIT ---
+    const finalExamQuestions = [
+      {
+        q: "1. Was bedeutet das Wort „Biologie“ übersetzt?",
+        options: ["Lehre der Steine und Erde", "Lehre vom Leben", "Lehre der Sterne"],
+        correct: 1
+      },
+      {
+        q: "2. Welche drei Gruppen gehören zur lebenden Natur?",
+        options: ["Tiere, Pflanzen und Pilze", "Tiere, Steine und Wasser", "Pflanzen, Wolken und Bakterien"],
+        correct: 0
+      },
+      {
+        q: "3. Welches ist KEINES der fünf Kennzeichen des Lebendigen?",
+        options: ["Stoffwechsel", "Reizbarkeit", "Fliegen können"],
+        correct: 2
+      },
+      {
+        q: "4. Was passiert beim Sauerklee, wenn es dunkel und kalt wird?",
+        options: ["Die Blätter klappen nach unten zusammen und die Blüte schließt sich.", "Die Blüte öffnet sich weit und wächst 10 cm in die Höhe.", "Die Blätter fallen ab."],
+        correct: 0
+      },
+      {
+        q: "5. Welches Kennzeichen der Lebewesen zeigt der Sauerklee durch das Zusammenklappen bei Dunkelheit?",
+        options: ["Fortpflanzung", "Reizbarkeit (und Eigenbewegung)", "Stoffwechsel"],
+        correct: 1
+      },
+      {
+        q: "6. Wie heißen die Knochen ganz unten am Vorderbein des Hundes?",
+        options: ["Zehenknochen", "Fingerknochen", "Fersenknochen"],
+        correct: 1
+      },
+      {
+        q: "7. Wo befindet sich beim Hund die Ferse (das Sprunggelenk)?",
+        options: ["Ganz unten auf dem Boden am Vorderbein", "Weiter oben am Hinterbein (zeigt nach hinten)", "Direkt unter dem Schädel"],
+        correct: 1
+      },
+      {
+        q: "8. Warum ist die Anschaffung eines Hundes eine große Verantwortung?",
+        options: ["Weil ein Hund viele Jahre täglich Auslauf, Futter, Zeit und Tierarztbesuche braucht.", "Weil ein Hund nur im Sommer gefüttert werden muss.", "Weil Hunde keinen Schlaf brauchen."],
+        correct: 0
+      }
+    ];
+
+    function renderFinalExam() {
+      const container = document.getElementById('exam-questions-container');
+      document.getElementById('exam-result-box').classList.add('hidden');
+
+      container.innerHTML = finalExamQuestions.map((item, qIdx) => `
+        <div class="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200" id="exam-q-card-${qIdx}">
+          <p class="font-extrabold text-slate-800 text-sm sm:text-base mb-3">${item.q}</p>
+          <div class="space-y-2">
+            ${item.options.map((opt, oIdx) => `
+              <label class="flex items-center gap-3 p-3 bg-white rounded-xl border border-slate-200 cursor-pointer hover:border-sky-400 transition">
+                <input type="radio" name="exam_q_${qIdx}" value="${oIdx}" class="w-4 h-4 text-emerald-600">
+                <span class="text-xs sm:text-sm font-semibold text-slate-700">${opt}</span>
+              </label>
+            `).join('')}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function gradeFinalExam() {
+      let score = 0;
+      finalExamQuestions.forEach((item, qIdx) => {
+        const selected = document.querySelector(`input[name="exam_q_${qIdx}"]:checked`);
+        const card = document.getElementById(`exam-q-card-${qIdx}`);
+        if (selected && parseInt(selected.value, 10) === item.correct) {
+          score++;
+          card.className = "p-4 sm:p-5 rounded-2xl bg-emerald-50 border-2 border-emerald-500";
+        } else {
+          card.className = "p-4 sm:p-5 rounded-2xl bg-rose-50 border-2 border-rose-400";
+        }
+      });
+
+      // Schulnote berechnen
+      let grade = "1";
+      let title = "Spitzenleistung! Du bist ein echter Bio-Profi!";
+      let comment = "Du beherrschst alle Themen aus der Klassenarbeit sicher. Viel Erfolg bei der echten Arbeit!";
+      let badgeColor = "bg-emerald-600";
+
+      if (score === 8) {
+        grade = "1";
+      } else if (score === 7) {
+        grade = "2+";
+        title = "Sehr gut gemacht!";
+      } else if (score === 6) {
+        grade = "2";
+        title = "Gut gemacht!";
+        comment = "Schau dir die rot markierte Frage noch einmal kurz an, dann klappt es perfekt!";
+      } else if (score === 5) {
+        grade = "3";
+        title = "Befriedigend – schon viel gewusst!";
+        comment = "Wiederhole die rot markierten Themen noch einmal in den Modulen 1 bis 4.";
+        badgeColor = "bg-amber-500";
+      } else {
+        grade = "4";
+        title = "Weiter üben – du schaffst das!";
+        comment = "Gehe noch einmal durch die Lernmodule 1 bis 4 und starte die Probe-Klassenarbeit danach erneut.";
+        badgeColor = "bg-orange-500";
+      }
+
+      const resultBox = document.getElementById('exam-result-box');
+      const badge = document.getElementById('exam-grade-badge');
+      badge.className = `w-24 h-24 rounded-3xl ${badgeColor} text-white flex flex-col items-center justify-center shadow-lg flex-shrink-0`;
+      document.getElementById('exam-grade-value').textContent = grade;
+      document.getElementById('exam-result-title').textContent = title;
+      document.getElementById('exam-result-score').textContent = `Du hast ${score} von 8 Punkten erreicht.`;
+      document.getElementById('exam-result-comment').textContent = comment;
+
+      resultBox.classList.remove('hidden');
+      resultBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      if (score >= 6) {
+        addStars('final_exam_pass:4', 4);
+      }
+    }
+
+    // --- INITIALISIERUNG BEIM LADEN ---
+    window.addEventListener('DOMContentLoaded', () => {
+      renderCharacteristics();
+      initDogSkeleton();
+      initMatchingGame();
+      renderFinalExam();
+    });
+  </script>
+</body>
+</html>
